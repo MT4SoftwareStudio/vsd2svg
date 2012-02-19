@@ -1,0 +1,5 @@
+vsd2svg converts Visio VSD files into SVG.
+
+More information is available from http://dia-installer.de/vsd2svg
+
+vsd2svg uses libvisio.
