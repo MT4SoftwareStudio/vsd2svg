@@ -1,9 +1,11 @@
 #include <iostream>
-
 #include <libxml/tree.h>
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
+#include <libvisio/libvisio.h>
+#include <libwpd-stream/libwpd-stream.h>
+#include <libwpd/libwpd.h>
 
 using namespace std;
 
@@ -14,11 +16,19 @@ int main (int argc, char *argv[])
 	xmlXPathObjectPtr xpathObj;
 	int drawingpageno = 0;
 
-	if((3 < argc)||(4 > argc))
+	if((2 > argc)||(3 < argc))
 	{
-		cout << "USAGE: vsd2svg visiofile svgfile [drawingpagenumber]" << endl;
+		cerr << "USAGE: vsd2svg visiofile svgfile [drawingpagenumber]" << endl;
 		return 1;
 	}
+
+	WPXFileStream input(argv[1]);
+
+  	if (!libvisio::VisioDocument::isSupported(&input))
+  	{
+    		cerr << "ERROR: Unsupported file format (unsupported version) or file is encrypted!" << std::endl;
+    		return 1;
+  	}
 
 	xmlInitParser();
 	LIBXML_TEST_VERSION

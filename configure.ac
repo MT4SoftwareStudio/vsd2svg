@@ -11,8 +11,8 @@ AC_CONFIG_FILES([Makefile src/Makefile])
 AC_PROG_CXX
 
 # Checks for libraries.
-PKG_CHECK_MODULES([vsd2svg],[libvisio-0.0])
-PKG_CHECK_MODULES(XML, libxml-2.0 >= 2.4)
+PKG_CHECK_MODULES([libvisio],[libvisio-0.0])
+PKG_CHECK_MODULES([libxml2],[libxml-2.0 >= 2.4])
 
 # Checks for header files.
 

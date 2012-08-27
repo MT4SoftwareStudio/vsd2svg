@@ -1,4 +1,5 @@
 bin_PROGRAMS=vsd2svg
-vsd2svg_SOURCES=vsd2svg.cpp
-vsd2svg_CPPFLAGS = $(XML_CFLAGS) $(LIBVISIO_CFLAGS)
-vsd2svg_LDFLAGS = $(XML_LIBS) $(LIBVISIO_LIBS)
+vsd2svg_SOURCES = vsd2svg.cpp
+AM_CPPFLAGS = $(libvisio_CFLAGS) $(libxml2_CFLAGS)
+vsd2svg_LDADD = $(libvisio_LIBS) $(libxml2_LIBS)
+
