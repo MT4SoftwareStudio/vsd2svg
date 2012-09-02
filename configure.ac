@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.67])
-AC_INIT([vsd2svg], [0.0.1], [sdteffen@sdteffen.de])
+AC_INIT([vsd2svg], [0.0.2], [sdteffen@sdteffen.de])
 AM_INIT_AUTOMAKE([foreign -Wall -Werror])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([Makefile src/Makefile])
@@ -12,7 +12,6 @@ AC_PROG_CXX
 
 # Checks for libraries.
 PKG_CHECK_MODULES([libvisio],[libvisio-0.0])
-PKG_CHECK_MODULES([libxml2],[libxml-2.0 >= 2.4])
 
 # Checks for header files.
 
