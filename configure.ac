@@ -2,10 +2,11 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.67])
-AC_INIT([vsd2svg], [0.0.2], [sdteffen@sdteffen.de])
+AC_INIT([vsd2svg], [0.0.3], [sdteffen@sdteffen.de])
 AM_INIT_AUTOMAKE([foreign -Wall -Werror])
 AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_FILES([Makefile src/Makefile])
+AC_CONFIG_FILES([Makefile installer/Makefile installer/rpm/Makefile \
+	src/Makefile])
 
 # Checks for programs.
 AC_PROG_CXX

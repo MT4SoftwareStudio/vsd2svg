@@ -26,6 +26,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
+#include <sys/stat.h>
 #include <libvisio/libvisio.h>
 #include <libwpd-stream/libwpd-stream.h>
 #include <libwpd/libwpd.h>
@@ -36,12 +37,21 @@ int main(int argc, char *argv[])
 {
 	int drawingpageno = 0;
 
-	if ((1 > argc) || (3 < argc)) {
+	if ((2 > argc) || (4 < argc)) {
 		cerr <<
 		    "USAGE: vsd2svg visiofile [svgfile] [drawingpagenumber]"
 		    << endl;
 		return 1;
 	}
+
+	struct stat statbuf;
+	if(-1 == stat(argv[1], &statbuf))
+	{
+		cerr <<
+			"ERROR: File '" << argv[1] << "' does not exist." 
+			<< endl;
+		return 1;
+	} 
 
 	WPXFileStream input(argv[1]);
 
