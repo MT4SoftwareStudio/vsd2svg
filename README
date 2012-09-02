@@ -4,7 +4,12 @@ More information is available from http://dia-installer.de/vsd2svg
 
 vsd2svg uses libvisio.
 
-Developers
+ROADMAP
+
+* Add graphical user interfaces
+* Use drawing page names instead of numeric references
+
+DEVELOPERS
 
 Please use K&R style with 8 character indents to format the code:
 indent -kr -i8

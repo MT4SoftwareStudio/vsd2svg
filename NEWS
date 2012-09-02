@@ -1,0 +1,6 @@
+2012-09-02 vsd2svg
+	   
+	* First working version
+	* Convert VSD files
+	* Count number of drawing pages in VSD files
+    
