@@ -15,6 +15,7 @@ Makefile
 **/*.in
 **/Makefile
 *~
+*.gz
 *.xz
 src/*~
 src/.deps

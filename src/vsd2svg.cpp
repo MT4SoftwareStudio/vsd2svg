@@ -23,12 +23,9 @@
 * Copyright (C) 2011 Fridrich Strba <fridrich.strba@bluewin.ch>
 * Copyright (C) 2011 Eilidh McAdam <tibbylickle@gmail.com>
 */
+#include <cstdlib>
 #include <fstream>
 #include <iostream>
-#include <libxml/tree.h>
-#include <libxml/parser.h>
-#include <libxml/xpath.h>
-#include <libxml/xpathInternals.h>
 #include <libvisio/libvisio.h>
 #include <libwpd-stream/libwpd-stream.h>
 #include <libwpd/libwpd.h>
@@ -37,9 +34,6 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-	xmlDocPtr doc;
-	xmlXPathContextPtr xpathCtx;
-	xmlXPathObjectPtr xpathObj;
 	int drawingpageno = 0;
 
 	if ((1 > argc) || (3 < argc)) {
