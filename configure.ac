@@ -5,7 +5,8 @@ AC_PREREQ([2.67])
 AC_INIT([vsd2svg], [0.0.3], [sdteffen@sdteffen.de])
 AM_INIT_AUTOMAKE([foreign -Wall -Werror])
 AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_FILES([Makefile installer/Makefile installer/rpm/Makefile \
+AC_CONFIG_FILES([Makefile installer/Makefile installer/macosx/Makefile \
+	installer/rpm/Makefile \
 	src/Makefile])
 
 # Checks for programs.

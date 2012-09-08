@@ -1,1 +1,1 @@
-SUBDIRS = rpm
+SUBDIRS = macosx rpm
