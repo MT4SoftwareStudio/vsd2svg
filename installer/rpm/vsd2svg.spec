@@ -1,4 +1,4 @@
-Name:           vsd2vg
+Name:           vsd2svg
 Summary:        Convert VSD files into SVG files
 Version:        0.0.3
 Release:        0
