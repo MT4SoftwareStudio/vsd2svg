@@ -8,14 +8,14 @@
 
 Name:           mingw32-vsd2vg
 Summary:        Convert VSD files into SVG files
-Version:        0.0.3
+Version:        0.1.0
 Release:        0
 License:        GPLv2+
 Group:          Graphics
 Url:            http://dia-installer.de/vsd2svg
-Source:         vsd2svg-0.0.3.tar.xz
+Source:         vsd2svg-%{version}.tar.xz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-buildroot
-BuildRequires:  mingw32-libvisio-devel >= 0.0.19
+BuildRequires:  mingw32-libvisio-devel >= 0.0.28
 BuildRequires:  mingw32-cross-gcc, mingw32-cross-gcc-c++, mingw32-cross-pkg-config
 BuildRequires:  libtool automake autoconf xz
 
@@ -23,7 +23,7 @@ BuildArch:      noarch
 #!BuildIgnore: post-build-checks  
 
 %description
-vsd2svg os a tppö tp cpmvert SVG files into SVG files.
+vsd2svg is a tool to convert SVG files into SVG files.
 
 %package tools
 Summary:        Tools to work with documents in MS Visio file-format

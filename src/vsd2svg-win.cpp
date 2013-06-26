@@ -1,5 +1,5 @@
 /**
-* vsd2svg.cpp Convert VSD files into SVG files
+* vsd2svg-win.cpp Convert VSD files into SVG files with Windows GUI
 *
 * (c) 2011-2013 Steffen Macke <sdteffen@sdteffen.de>
 *
@@ -26,45 +26,73 @@
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
+#include <string>
 #include <sys/stat.h>
 #include <libvisio/libvisio.h>
 #include <libwpd-stream/libwpd-stream.h>
 #include <libwpd/libwpd.h>
+#include <windows.h>
 #include <config.h>
 
 using namespace std;
 
-int main(int argc, char *argv[])
+char gszVersion[] = "vsd2svg-win 0.1.0";
+
+int WINAPI WinMain ( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow )
 {
 	int drawingpageno = 0;
-
-	if ((2 > argc) || (4 < argc)) {
-		cerr <<
-		    "USAGE: vsd2svg [OPTION] visiofile [svgfile] [drawingpagenumber]"
-		    << endl << endl <<
-		    "  -v" << endl <<
-                    "               display version number and exit" << endl << endl <<
-		    "vsd2svg home page: <http://dia-installer.de/vsd2svg>" << endl;
-		return 1;
-	}
-
-	if((string)"-v" == argv[1])
-	{
-	       cerr <<
-			"vsd2svg " << VERSION << endl;
-		return 0;
-	}
-
 	struct stat statbuf;
-	if(-1 == stat(argv[1], &statbuf))
+	libvisio::VSDStringVector output;
+	LPWSTR *szArglist = NULL;
+	int nArgs;
+	wchar_t visiopath[MAX_PATH] = {0};
+
+	szArglist = CommandLineToArgvW(GetCommandLineW(), &nArgs);
+	if(NULL == szArglist)
 	{
-		cerr <<
-			"ERROR: File '" << argv[1] << "' does not exist." 
-			<< endl;
+		MessageBox(NULL, "CommandLineToArgW failed\n",
+			gszVersion, MB_ICONERROR);
+		return -1;
+	}
+	if (4 < nArgs) {
+		MessageBox (NULL,
+		    "USAGE: vsd2svg-win [visiofile] [svgfile] [drawingpagenumber]",
+		    gszVersion, MB_ICONERROR );
+	}
+	if ( 1 < nArgs)
+	{
+		StringCbCopyW(visiopath, MAX_PATH, szArglist[0]);
+	}
+	else
+	{
+			OPENFILENAME ofn;
+			HWND hwnd;
+			
+			ZeroMemory(&ofn, sizeof(ofn));
+			ofn.lStructSize = sizeof(ofn);
+			ofn.hwndOwner = hwnd;
+			ofn.lpstrFile = visiopath;
+			ofn.nMaxFile = MAX_PATH;
+			ofn.lpstrFilter = "All\0*.*\0Visio\0*.VSD\0";
+			ofn.nFilterIndex = 1;
+			ofn.lpstrFileTitle = NULL;
+			ofn.nMaxFileTitle = 0;
+			ofn.lpstrInitialDir = NULL;
+			ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+			if (GetOpenFileName(&ofn) != TRUE) 
+	    			return -1;			
+	}
+
+	if(-1 == wstat(visiofile, &statbuf))
+	{
+		MessageBox (NULL,
+			"ERROR: File does not exist",
+			gszVersion, MB_ICONERROR);
 		return 1;
 	} 
 
-	WPXFileStream input(argv[1]);
+	WPXFileStream input(visiofile);
 
 	if (!libvisio::VisioDocument::isSupported(&input)) {
 		cerr <<
@@ -72,8 +100,7 @@ int main(int argc, char *argv[])
 		    << std::endl;
 		return 1;
 	}
-
-	libvisio::VSDStringVector output;
+/*
 	if (!libvisio::VisioDocument::generateSVG(&input, output)) {
 		std::cerr << "ERROR: SVG Generation failed!" << std::endl;
 		return 1;
@@ -111,7 +138,7 @@ int main(int argc, char *argv[])
 
 		svgfile << output[page].cstr() << std::endl;
 		svgfile.close();
-	}
+	} */
 
-	return 0;
+	return 0; 
 }
