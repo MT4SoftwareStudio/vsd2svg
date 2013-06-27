@@ -61,11 +61,11 @@ int WINAPI WinMain ( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	}
 	if ( 1 < nArgs)
 	{
-		StringCbCopyW(visiopath, MAX_PATH, szArglist[0]);
+		wcsncpy(visiopath, szArglist[0], MAX_PATH);
 	}
 	else
 	{
-			OPENFILENAME ofn;
+			OPENFILENAMEW ofn;
 			HWND hwnd;
 			
 			ZeroMemory(&ofn, sizeof(ofn));
@@ -73,18 +73,18 @@ int WINAPI WinMain ( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 			ofn.hwndOwner = hwnd;
 			ofn.lpstrFile = visiopath;
 			ofn.nMaxFile = MAX_PATH;
-			ofn.lpstrFilter = "All\0*.*\0Visio\0*.VSD\0";
+			ofn.lpstrFilter = L"All\0*.*\0Visio\0*.VSD\0";
 			ofn.nFilterIndex = 1;
 			ofn.lpstrFileTitle = NULL;
 			ofn.nMaxFileTitle = 0;
 			ofn.lpstrInitialDir = NULL;
 			ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 
-			if (GetOpenFileName(&ofn) != TRUE) 
+			if (GetOpenFileNameW(&ofn) != TRUE) 
 	    			return -1;			
 	}
 
-	if(-1 == wstat(visiofile, &statbuf))
+	if(-1 == stat((const char*)visiopath, &statbuf))
 	{
 		MessageBox (NULL,
 			"ERROR: File does not exist",
@@ -92,7 +92,7 @@ int WINAPI WinMain ( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		return 1;
 	} 
 
-	WPXFileStream input(visiofile);
+	WPXFileStream input((const char *)visiopath);
 
 	if (!libvisio::VisioDocument::isSupported(&input)) {
 		cerr <<
