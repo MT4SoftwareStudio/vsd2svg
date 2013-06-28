@@ -38,61 +38,57 @@ using namespace std;
 
 char gszVersion[] = "vsd2svg-win 0.1.0";
 
-int WINAPI WinMain ( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow )
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
+		   LPSTR lpCmdLine, int nCmdShow)
 {
 	int drawingpageno = 0;
 	struct stat statbuf;
 	libvisio::VSDStringVector output;
 	LPWSTR *szArglist = NULL;
 	int nArgs;
-	wchar_t visiopath[MAX_PATH] = {0};
+	wchar_t visiopath[MAX_PATH] = { 0 };
 
 	szArglist = CommandLineToArgvW(GetCommandLineW(), &nArgs);
-	if(NULL == szArglist)
-	{
+	if (NULL == szArglist) {
 		MessageBox(NULL, "CommandLineToArgW failed\n",
-			gszVersion, MB_ICONERROR);
+			   gszVersion, MB_ICONERROR);
 		return -1;
 	}
 	if (4 < nArgs) {
-		MessageBox (NULL,
-		    "USAGE: vsd2svg-win [visiofile] [svgfile] [drawingpagenumber]",
-		    gszVersion, MB_ICONERROR );
+		MessageBox(NULL,
+			   "USAGE: vsd2svg-win [visiofile] [svgfile] [drawingpagenumber]",
+			   gszVersion, MB_ICONERROR);
 	}
-	if ( 1 < nArgs)
-	{
+	if (1 < nArgs) {
 		wcsncpy(visiopath, szArglist[0], MAX_PATH);
-	}
-	else
-	{
-			OPENFILENAMEW ofn;
-			HWND hwnd;
-			
-			ZeroMemory(&ofn, sizeof(ofn));
-			ofn.lStructSize = sizeof(ofn);
-			ofn.hwndOwner = hwnd;
-			ofn.lpstrFile = visiopath;
-			ofn.nMaxFile = MAX_PATH;
-			ofn.lpstrFilter = L"All\0*.*\0Visio\0*.VSD\0";
-			ofn.nFilterIndex = 1;
-			ofn.lpstrFileTitle = NULL;
-			ofn.nMaxFileTitle = 0;
-			ofn.lpstrInitialDir = NULL;
-			ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+	} else {
+		OPENFILENAMEW ofn;
+		HWND hwnd;
 
-			if (GetOpenFileNameW(&ofn) != TRUE) 
-	    			return -1;			
+		ZeroMemory(&ofn, sizeof(ofn));
+		ofn.lStructSize = sizeof(ofn);
+		ofn.hwndOwner = hwnd;
+		ofn.lpstrFile = visiopath;
+		ofn.nMaxFile = MAX_PATH;
+		ofn.lpstrFilter = L"All\0*.*\0Visio\0*.VSD\0";
+		ofn.nFilterIndex = 1;
+		ofn.lpstrFileTitle = NULL;
+		ofn.nMaxFileTitle = 0;
+		ofn.lpstrInitialDir = NULL;
+		ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+		if (GetOpenFileNameW(&ofn) != TRUE)
+			return -1;
 	}
 
-	if(-1 == stat((const char*)visiopath, &statbuf))
-	{
-		MessageBox (NULL,
-			"ERROR: File does not exist",
-			gszVersion, MB_ICONERROR);
+	if (-1 == stat((const char *) visiopath, &statbuf)) {
+		MessageBox(NULL,
+			   "ERROR: File does not exist",
+			   gszVersion, MB_ICONERROR);
 		return 1;
-	} 
+	}
 
-	WPXFileStream input((const char *)visiopath);
+	WPXFileStream input((const char *) visiopath);
 
 	if (!libvisio::VisioDocument::isSupported(&input)) {
 		cerr <<
@@ -140,5 +136,5 @@ int WINAPI WinMain ( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		svgfile.close();
 	} */
 
-	return 0; 
+	return 0;
 }
