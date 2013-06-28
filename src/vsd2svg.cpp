@@ -31,7 +31,6 @@
 #include <libwpd-stream/libwpd-stream.h>
 #include <libwpd/libwpd.h>
 #include <strings.h>
-#include <stdlib.h>
 #include <config.h>
 
 using namespace std;
