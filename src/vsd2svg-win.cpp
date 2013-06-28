@@ -81,19 +81,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			return -1;
 	}
 
-	if (-1 == stat((const char *) visiopath, &statbuf)) {
+	/*if (-1 == stat((const char *) visiopath, &statbuf)) {
 		MessageBox(NULL,
 			   "ERROR: File does not exist",
 			   gszVersion, MB_ICONERROR);
 		return 1;
-	}
+	}*/
 
 	WPXFileStream input((const char *) visiopath);
 
 	if (!libvisio::VisioDocument::isSupported(&input)) {
-		cerr <<
-		    "ERROR: Unsupported file format (unsupported version) or file is encrypted!"
-		    << std::endl;
+		MessageBox(NULL,
+		    "ERROR: Unsupported file format (unsupported version) or file is encrypted!",
+			gszVersion, MB_ICONERROR);
 		return 1;
 	}
 /*
