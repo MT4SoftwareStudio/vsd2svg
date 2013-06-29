@@ -6,10 +6,7 @@ Install pkg-config-lite
 wget http://zlib.net/zlib-1.2.8.tar.gz
 tar xzf zlib-1.2.8.tar.gz
 cd zlib-1.2.8
-export INCLUDE_PATH=/mingw/include
-export LIBRARY_PATH=/mingw/lib
-export BINARY_PATH=/mingw/bin
-make install -fwin32/Makefile.gcc
+make install -fwin32/Makefile.gcc SHARED_MODE=1
 cd ..
 
 wget http://downloads.sourceforge.net/project/libwpd/libwpd/libwpd-0.9.8/libwpd-0.9.8.tar.xz?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Flibwpd%2Ffiles%2Flibwpd%2Flibwpd-0.9.8%2F&ts=1372442662&use_mirror=heanet
@@ -42,6 +39,9 @@ cd icu/source
 ./runConfigureICU MinGW --prefix=/mingw
 make
 make install
+cp /mingw/bin/icudt51.dll /mingw/bin/libicudt51.dll
+cp /mingw/bin/icuin51.dll /mingw/bin/libicuin51.dll
+cp /mingw/bin/icuuc51.dll /mingw/bin/libicuuc51.dll
 cd ../..
 
 wget ftp://xmlsoft.org/libxml2/libxml2-2.9.1.tar.gz
@@ -63,3 +63,5 @@ bjam toolset=gcc
 wget http://dev-www.libreoffice.org/src/libvisio-0.0.28.tar.xz
 tar xf libvisio-0.0.28.tar.xz
 cd libvisio-0.0.28.tar.xz
+# Edit pkg-config configuration to require all required DLLs?
+./configure --prefix=/mingw

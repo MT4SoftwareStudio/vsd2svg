@@ -20,6 +20,7 @@ Makefile
 src/*~
 src/.deps
 src/vsd2svg
+src/*.exe
 src/*.o
 src/*.out
 
