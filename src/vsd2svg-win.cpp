@@ -33,6 +33,7 @@
 #include <libwpd/libwpd.h>
 #include <windows.h>
 #include <config.h>
+#include <vsd2svg-win.h>
 
 using namespace std;
 
@@ -46,7 +47,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	libvisio::VSDStringVector output;
 	LPWSTR *szArglist = NULL;
 	int nArgs;
-	wchar_t visiopath[MAX_PATH] = { 0 };
+	wchar_t visiopathw[MAX_PATH] = { 0 };
 
 	szArglist = CommandLineToArgvW(GetCommandLineW(), &nArgs);
 	if (NULL == szArglist) {
@@ -60,7 +61,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			   gszVersion, MB_ICONERROR);
 	}
 	if (1 < nArgs) {
-		wcsncpy(visiopath, szArglist[0], MAX_PATH);
+		wcsncpy(visiopathw, szArglist[1], MAX_PATH);
 	} else {
 		OPENFILENAMEW ofn;
 		HWND hwnd;
@@ -68,9 +69,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		ZeroMemory(&ofn, sizeof(ofn));
 		ofn.lStructSize = sizeof(ofn);
 		ofn.hwndOwner = hwnd;
-		ofn.lpstrFile = visiopath;
+		ofn.lpstrFile = visiopathw;
 		ofn.nMaxFile = MAX_PATH;
-		ofn.lpstrFilter = L"All\0*.*\0Visio\0*.VSD\0";
+		ofn.lpstrFilter = L"Visio *.VSD\0*.VSD\0All\0*.*\0";
 		ofn.nFilterIndex = 1;
 		ofn.lpstrFileTitle = NULL;
 		ofn.nMaxFileTitle = 0;
@@ -81,14 +82,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			return -1;
 	}
 
-	/*if (-1 == stat((const char *) visiopath, &statbuf)) {
+	PSZ pszVisioPathA = get_multibyte_for_wide_character(visiopathw);
+	
+	if (-1 == stat((const char *) pszVisioPathA, &statbuf)) {
 		MessageBox(NULL,
 			   "ERROR: File does not exist",
 			   gszVersion, MB_ICONERROR);
 		return 1;
-	}*/
+	}
 
-	WPXFileStream input((const char *) visiopath);
+	WPXFileStream input(pszVisioPathA);
 
 	if (!libvisio::VisioDocument::isSupported(&input)) {
 		MessageBox(NULL,
@@ -137,4 +140,25 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	} */
 
 	return 0;
+}
+
+PSZ get_multibyte_for_wide_character(LPWSTR pathw)
+{
+	UINT acp = GetACP();
+	int nPathLenUnicode = lstrlenW( pathw ); 
+	int nPathLen = WideCharToMultiByte( acp, 
+	0, 
+	pathw,
+	nPathLenUnicode,
+	NULL, 0, 
+	NULL, NULL ); 
+	PSZ pszPathA = new char[ nPathLen ];
+	WideCharToMultiByte( acp, 
+	0, 
+	pathw, 
+	nPathLenUnicode,
+	pszPathA, 
+	nPathLen,
+	NULL, NULL );
+		return pszPathA;
 }
