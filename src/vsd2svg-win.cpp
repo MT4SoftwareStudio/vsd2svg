@@ -89,31 +89,34 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		if (GetOpenFileNameW(&ofn) != TRUE)
 			return 1;
 	}
-	
+
 	dwRetVal = GetTempPathA(MAX_PATH, lpTempPathBuffer);
-	if(dwRetVal > MAX_PATH || 0 == dwRetVal)
-	{
+	if (dwRetVal > MAX_PATH || 0 == dwRetVal) {
 		ExitWithError("ERROR: GetTempPath failed.");
 	}
-	
-	if(0 == GetTempFileNameA(lpTempPathBuffer, "vsd2svg", 0, szTmpVisio))
-	{
+
+	if (0 ==
+	    GetTempFileNameA(lpTempPathBuffer, "vsd2svg", 0, szTmpVisio)) {
 		ExitWithError("ERROR: GetTempFileName failed.");
 	}
-	if(0 == GetTempFileNameA(lpTempPathBuffer, "vsd2svg", 0, szTmpSvg))
-	{
+	if (0 ==
+	    GetTempFileNameA(lpTempPathBuffer, "vsd2svg", 0, szTmpSvg)) {
 		ExitWithError("ERROR: GetTempFilename failed.");
 	}
-	iRetVal = MultiByteToWideChar(uiACP, 0, szTmpVisio, -1, lpwTmpVisio, MAX_PATH);
-	if(iRetVal > MAX_PATH || 0 == iRetVal)
+	iRetVal =
+	    MultiByteToWideChar(uiACP, 0, szTmpVisio, -1, lpwTmpVisio,
+				MAX_PATH);
+	if (iRetVal > MAX_PATH || 0 == iRetVal)
 		ExitWithError("ERROR: MultiByteToWideChar failed");
-	iRetVal = MultiByteToWideChar(uiACP, 0, szTmpSvg, -1, lpwTmpSvg, MAX_PATH);
-	if(iRetVal > MAX_PATH || 0 == iRetVal)
-		ExitWithError("ERROR: MultiByteToWideChar failed");	
-	if(0 == CopyFileW(visiopathw, lpwTmpVisio, FALSE))
+	iRetVal =
+	    MultiByteToWideChar(uiACP, 0, szTmpSvg, -1, lpwTmpSvg,
+				MAX_PATH);
+	if (iRetVal > MAX_PATH || 0 == iRetVal)
+		ExitWithError("ERROR: MultiByteToWideChar failed");
+	if (0 == CopyFileW(visiopathw, lpwTmpVisio, FALSE))
 		ExitWithError("ERROR: CopyFileW failed");
-	
-	if (-1 == stat( szTmpVisio, &statbuf)) {
+
+	if (-1 == stat(szTmpVisio, &statbuf)) {
 		MessageBox(NULL,
 			   "ERROR: File does not exist",
 			   gszVersion, MB_ICONERROR);
@@ -124,124 +127,142 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	if (!libvisio::VisioDocument::isSupported(&input)) {
 		MessageBox(NULL,
-		    "ERROR: Unsupported file format (unsupported version) or file is encrypted!",
-			gszVersion, MB_ICONERROR);
-		if(0 == DeleteFileA(szTmpVisio))
-			MessageBox(NULL, "ERROR: DeleteFile failed", gszVersion, MB_ICONERROR);
+			   "ERROR: Unsupported file format (unsupported version) or file is encrypted!",
+			   gszVersion, MB_ICONERROR);
+		if (0 == DeleteFileA(szTmpVisio))
+			MessageBox(NULL, "ERROR: DeleteFile failed",
+				   gszVersion, MB_ICONERROR);
 		return 1;
 	}
 
 	if (!libvisio::VisioDocument::generateSVG(&input, output)) {
-			MessageBox(NULL,
-		    "ERROR: SVG generation failed!",
-			gszVersion, MB_ICONERROR);
-		if(0 == DeleteFileA(szTmpVisio))
-			MessageBox(NULL, "ERROR: DeleteFile failed", gszVersion, MB_ICONERROR); 
+		MessageBox(NULL,
+			   "ERROR: SVG generation failed!",
+			   gszVersion, MB_ICONERROR);
+		if (0 == DeleteFileA(szTmpVisio))
+			MessageBox(NULL, "ERROR: DeleteFile failed",
+				   gszVersion, MB_ICONERROR);
 		return 1;
 	}
 
 	if (output.empty()) {
-			MessageBox(NULL,
-		    "ERROR: No SVG document generated!",
-			gszVersion, MB_ICONERROR);
-		if(0 == DeleteFileA(szTmpVisio))
-			MessageBox(NULL, "ERROR: DeleteFile failed", gszVersion, MB_ICONERROR); 	
+		MessageBox(NULL,
+			   "ERROR: No SVG document generated!",
+			   gszVersion, MB_ICONERROR);
+		if (0 == DeleteFileA(szTmpVisio))
+			MessageBox(NULL, "ERROR: DeleteFile failed",
+				   gszVersion, MB_ICONERROR);
 		return 1;
 	}
-	
-	if(0 < output.size())
-	{
-	
-	HINSTANCE hinst = NULL;
-	HWND hwndOwner = NULL; 
-	LPSTR lpszMessage = "Select a drawing page";
-	
-HGLOBAL hgbl;
-    LPDLGTEMPLATE lpdt;
-    LPDLGITEMTEMPLATE lpdit;
-    LPWORD lpw;
-    LPWSTR lpwsz;
-    LRESULT ret;
-    int nchar;
 
-    hgbl = GlobalAlloc(GMEM_ZEROINIT, 1024);
-    if (!hgbl)
-        return -1;
- 
-    lpdt = (LPDLGTEMPLATE)GlobalLock(hgbl);
- 
-    lpdt->style = WS_POPUP | WS_BORDER | WS_SYSMENU | DS_MODALFRAME | WS_CAPTION;
-    lpdt->cdit = 3;         // Number of controls
-    lpdt->x  = 10;  lpdt->y  = 10;
-    lpdt->cx = 320; lpdt->cy = 100;
+	if (0 < output.size()) {
 
-    lpw = (LPWORD)(lpdt + 1);
-    *lpw++ = 0;             // No menu
-    *lpw++ = 0;             // Predefined dialog box class (by default)
+		HINSTANCE hinst = NULL;
+		HWND hwndOwner = NULL;
+		LPSTR lpszMessage = "Select a drawing page";
 
-    lpwsz = (LPWSTR)lpw;
-    nchar = 1 + MultiByteToWideChar(CP_ACP, 0, gszVersion, -1, lpwsz, 50);
-    lpw += nchar;
+		HGLOBAL hgbl;
+		LPDLGTEMPLATE lpdt;
+		LPDLGITEMTEMPLATE lpdit;
+		LPWORD lpw;
+		LPWSTR lpwsz;
+		LRESULT ret;
+		int nchar;
 
-    lpw = lpwAlign(lpw);   
-    lpdit = (LPDLGITEMTEMPLATE)lpw;
-    lpdit->x  = 10; lpdit->y  = 70;
-    lpdit->cx = 280; lpdit->cy = 20;
-    lpdit->id = IDOK;       // OK button identifier
-    lpdit->style = WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON;
+		hgbl = GlobalAlloc(GMEM_ZEROINIT, 1024);
+		if (!hgbl)
+			return -1;
 
-    lpw = (LPWORD)(lpdit + 1);
-    *lpw++ = 0xFFFF;
-    *lpw++ = 0x0080;        // Button class
+		lpdt = (LPDLGTEMPLATE) GlobalLock(hgbl);
 
-    lpwsz = (LPWSTR)lpw;
-    nchar = 1 + MultiByteToWideChar(CP_ACP, 0, "OK", -1, lpwsz, 50);
-    lpw += nchar;
-    *lpw++ = 0;             // No creation data
+		lpdt->style =
+		    WS_POPUP | WS_BORDER | WS_SYSMENU | DS_MODALFRAME |
+		    WS_CAPTION;
+		lpdt->cdit = 3;	// Number of controls
+		lpdt->x = 10;
+		lpdt->y = 10;
+		lpdt->cx = 320;
+		lpdt->cy = 100;
 
-    //-----------------------
-    // Define a Combo box.
-    //-----------------------
-    lpw = lpwAlign(lpw);  
-    lpdit = (LPDLGITEMTEMPLATE)lpw;
-    lpdit->x  = 100; lpdit->y  = 10;
-    lpdit->cx = 80; lpdit->cy = 50;
-    lpdit->id = ID_PAGE;    
-    lpdit->style = CBS_DROPDOWN | CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE;
+		lpw = (LPWORD) (lpdt + 1);
+		*lpw++ = 0;	// No menu
+		*lpw++ = 0;	// Predefined dialog box class (by default)
 
-    lpw = (LPWORD)(lpdit + 1);
-    *lpw++ = 0xFFFF;
-    *lpw++ = 0x0085;        // Combo box
+		lpwsz = (LPWSTR) lpw;
+		nchar =
+		    1 + MultiByteToWideChar(CP_ACP, 0, gszVersion, -1,
+					    lpwsz, 50);
+		lpw += nchar;
 
-    lpwsz = (LPWSTR)lpw;
-    nchar = 1 + MultiByteToWideChar(CP_ACP, 0, "", -1, lpwsz, 50);
-    lpw += nchar;
-    *lpw++ = 0;             // No creation data
+		lpw = lpwAlign(lpw);
+		lpdit = (LPDLGITEMTEMPLATE) lpw;
+		lpdit->x = 10;
+		lpdit->y = 70;
+		lpdit->cx = 280;
+		lpdit->cy = 20;
+		lpdit->id = IDOK;	// OK button identifier
+		lpdit->style = WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON;
 
-    lpw = lpwAlign(lpw);    
-    lpdit = (LPDLGITEMTEMPLATE)lpw;
-    lpdit->x  = 10; lpdit->y  = 10;
-    lpdit->cx = 80; lpdit->cy = 20;
-    lpdit->id = ID_TEXT;
-    lpdit->style = WS_CHILD | WS_VISIBLE | SS_LEFT;
+		lpw = (LPWORD) (lpdit + 1);
+		*lpw++ = 0xFFFF;
+		*lpw++ = 0x0080;	// Button class
 
-    lpw = (LPWORD)(lpdit + 1);
-    *lpw++ = 0xFFFF;
-    *lpw++ = 0x0082;        // Static text
+		lpwsz = (LPWSTR) lpw;
+		nchar =
+		    1 + MultiByteToWideChar(CP_ACP, 0, "OK", -1, lpwsz,
+					    50);
+		lpw += nchar;
+		*lpw++ = 0;	// No creation data
 
-    for (lpwsz = (LPWSTR)lpw; *lpwsz++ = (WCHAR)*lpszMessage++;);
-    lpw = (LPWORD)lpwsz;
-    *lpw++ = 0;             // No creation data
+		//-----------------------
+		// Define a Combo box.
+		//-----------------------
+		lpw = lpwAlign(lpw);
+		lpdit = (LPDLGITEMTEMPLATE) lpw;
+		lpdit->x = 100;
+		lpdit->y = 10;
+		lpdit->cx = 80;
+		lpdit->cy = 50;
+		lpdit->id = ID_PAGE;
+		lpdit->style =
+		    CBS_DROPDOWN | CBS_HASSTRINGS | WS_CHILD |
+		    WS_OVERLAPPED | WS_VISIBLE;
 
-    GlobalUnlock(hgbl); 
-    ret = DialogBoxIndirect(hinst, 
-                           (LPDLGTEMPLATE)hgbl, 
-                           hwndOwner, 
-                           (DLGPROC)PageDlgProc); 
-    GlobalFree(hgbl); 
-		
-	}
-	else {
+		lpw = (LPWORD) (lpdit + 1);
+		*lpw++ = 0xFFFF;
+		*lpw++ = 0x0085;	// Combo box
+
+		lpwsz = (LPWSTR) lpw;
+		nchar =
+		    1 + MultiByteToWideChar(CP_ACP, 0, "", -1, lpwsz, 50);
+		lpw += nchar;
+		*lpw++ = 0;	// No creation data
+
+		lpw = lpwAlign(lpw);
+		lpdit = (LPDLGITEMTEMPLATE) lpw;
+		lpdit->x = 10;
+		lpdit->y = 10;
+		lpdit->cx = 80;
+		lpdit->cy = 20;
+		lpdit->id = ID_TEXT;
+		lpdit->style = WS_CHILD | WS_VISIBLE | SS_LEFT;
+
+		lpw = (LPWORD) (lpdit + 1);
+		*lpw++ = 0xFFFF;
+		*lpw++ = 0x0082;	// Static text
+
+		for (lpwsz = (LPWSTR) lpw;
+		     *lpwsz++ = (WCHAR) * lpszMessage++;);
+		lpw = (LPWORD) lpwsz;
+		*lpw++ = 0;	// No creation data
+
+		GlobalUnlock(hgbl);
+		ret = DialogBoxIndirect(hinst,
+					(LPDLGTEMPLATE) hgbl,
+					hwndOwner, (DLGPROC) PageDlgProc);
+		GlobalFree(hgbl);
+
+	} else {
 		unsigned page = 0;
 		ofstream svgfile;
 		svgfile.open(szTmpSvg);
@@ -261,36 +282,38 @@ HGLOBAL hgbl;
 
 void ExitWithError(const char *msg)
 {
-	MessageBox(NULL, msg,
-			   gszVersion, MB_ICONERROR);
-   exit(1);
+	MessageBox(NULL, msg, gszVersion, MB_ICONERROR);
+	exit(1);
 }
 
-BOOL CALLBACK PageDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+BOOL CALLBACK PageDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
+			  LPARAM lParam)
 {
-   switch(msg)
-   {
-	   case WM_INITDIALOG:
-		SendMessage(GetDlgItem(hDlg, ID_PAGE), (UINT) CB_ADDSTRING, (WPARAM) 0, (LPARAM) L"1");
-		SendMessage(GetDlgItem(hDlg, ID_PAGE), (UINT) CB_ADDSTRING, (WPARAM) 0, (LPARAM) L"2");
-		SendMessage(GetDlgItem(hDlg, ID_PAGE), (UINT) CB_SETCURSEL, (WPARAM) 0, (LPARAM) 0);
+	switch (msg) {
+	case WM_INITDIALOG:
+		SendMessage(GetDlgItem(hDlg, ID_PAGE), (UINT) CB_ADDSTRING,
+			    (WPARAM) 0, (LPARAM) L"1");
+		SendMessage(GetDlgItem(hDlg, ID_PAGE), (UINT) CB_ADDSTRING,
+			    (WPARAM) 0, (LPARAM) L"2");
+		SendMessage(GetDlgItem(hDlg, ID_PAGE), (UINT) CB_SETCURSEL,
+			    (WPARAM) 0, (LPARAM) 0);
 		SetFocus(GetDlgItem(hDlg, ID_PAGE));
 		return true;
-       case WM_DESTROY:
-           EndDialog(hDlg, 0);
-		   MessageBox(NULL, "WM_DESTROY", "", MB_ICONERROR);
-           return TRUE;
-   }
-   return FALSE;
+	case WM_DESTROY:
+		EndDialog(hDlg, 0);
+		MessageBox(NULL, "WM_DESTROY", "", MB_ICONERROR);
+		return TRUE;
+	}
+	return FALSE;
 }
 
 LPWORD lpwAlign(LPWORD lpIn)
 {
-    ULONG ul;
+	ULONG ul;
 
-    ul = (ULONG)lpIn;
-    ul ++;
-    ul >>=1;
-    ul <<=1;
-    return (LPWORD)ul;
+	ul = (ULONG) lpIn;
+	ul++;
+	ul >>= 1;
+	ul <<= 1;
+	return (LPWORD) ul;
 }
