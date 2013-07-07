@@ -24,4 +24,9 @@
 * Copyright (C) 2011 Eilidh McAdam <tibbylickle@gmail.com>
 */
 
-PSZ get_multibyte_for_wide_character(LPWSTR);
+#define ID_PAGE   100
+#define ID_TEXT   200
+
+void ExitWithError(const char*);
+BOOL CALLBACK PageDlgProc(HWND, UINT, WPARAM, LPARAM);
+LPWORD lpwAlign(LPWORD);

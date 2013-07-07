@@ -48,6 +48,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	LPWSTR *szArglist = NULL;
 	int nArgs;
 	wchar_t visiopathw[MAX_PATH] = { 0 };
+	wchar_t lpwTmpVisio[MAX_PATH];
+	wchar_t lpwTmpSvg[MAX_PATH];
+	char lpTempPathBuffer[MAX_PATH];
+	char szTmpVisio[MAX_PATH];
+	char szTmpSvg[MAX_PATH];
+	DWORD dwRetVal = 0;
+	int iRetVal = 0;
+	UINT uiACP = GetACP();
 
 	szArglist = CommandLineToArgvW(GetCommandLineW(), &nArgs);
 	if (NULL == szArglist) {
@@ -79,55 +87,164 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 
 		if (GetOpenFileNameW(&ofn) != TRUE)
-			return -1;
+			return 1;
 	}
-
-	PSZ pszVisioPathA = get_multibyte_for_wide_character(visiopathw);
 	
-	if (-1 == stat((const char *) pszVisioPathA, &statbuf)) {
+	dwRetVal = GetTempPathA(MAX_PATH, lpTempPathBuffer);
+	if(dwRetVal > MAX_PATH || 0 == dwRetVal)
+	{
+		ExitWithError("ERROR: GetTempPath failed.");
+	}
+	
+	if(0 == GetTempFileNameA(lpTempPathBuffer, "vsd2svg", 0, szTmpVisio))
+	{
+		ExitWithError("ERROR: GetTempFileName failed.");
+	}
+	if(0 == GetTempFileNameA(lpTempPathBuffer, "vsd2svg", 0, szTmpSvg))
+	{
+		ExitWithError("ERROR: GetTempFilename failed.");
+	}
+	iRetVal = MultiByteToWideChar(uiACP, 0, szTmpVisio, -1, lpwTmpVisio, MAX_PATH);
+	if(iRetVal > MAX_PATH || 0 == iRetVal)
+		ExitWithError("ERROR: MultiByteToWideChar failed");
+	iRetVal = MultiByteToWideChar(uiACP, 0, szTmpSvg, -1, lpwTmpSvg, MAX_PATH);
+	if(iRetVal > MAX_PATH || 0 == iRetVal)
+		ExitWithError("ERROR: MultiByteToWideChar failed");	
+	if(0 == CopyFileW(visiopathw, lpwTmpVisio, FALSE))
+		ExitWithError("ERROR: CopyFileW failed");
+	
+	if (-1 == stat( szTmpVisio, &statbuf)) {
 		MessageBox(NULL,
 			   "ERROR: File does not exist",
 			   gszVersion, MB_ICONERROR);
 		return 1;
 	}
 
-	WPXFileStream input(pszVisioPathA);
+	WPXFileStream input(szTmpVisio);
 
 	if (!libvisio::VisioDocument::isSupported(&input)) {
 		MessageBox(NULL,
 		    "ERROR: Unsupported file format (unsupported version) or file is encrypted!",
 			gszVersion, MB_ICONERROR);
+		if(0 == DeleteFileA(szTmpVisio))
+			MessageBox(NULL, "ERROR: DeleteFile failed", gszVersion, MB_ICONERROR);
 		return 1;
 	}
-/*
+
 	if (!libvisio::VisioDocument::generateSVG(&input, output)) {
-		std::cerr << "ERROR: SVG Generation failed!" << std::endl;
+			MessageBox(NULL,
+		    "ERROR: SVG generation failed!",
+			gszVersion, MB_ICONERROR);
+		if(0 == DeleteFileA(szTmpVisio))
+			MessageBox(NULL, "ERROR: DeleteFile failed", gszVersion, MB_ICONERROR); 
 		return 1;
 	}
 
 	if (output.empty()) {
-		std::cerr << "ERROR: No SVG document generated!" << std::
-		    endl;
+			MessageBox(NULL,
+		    "ERROR: No SVG document generated!",
+			gszVersion, MB_ICONERROR);
+		if(0 == DeleteFileA(szTmpVisio))
+			MessageBox(NULL, "ERROR: DeleteFile failed", gszVersion, MB_ICONERROR); 	
 		return 1;
 	}
+	
+	if(0 < output.size())
+	{
+	
+	HINSTANCE hinst = NULL;
+	HWND hwndOwner = NULL; 
+	LPSTR lpszMessage = "Select a drawing page";
+	
+HGLOBAL hgbl;
+    LPDLGTEMPLATE lpdt;
+    LPDLGITEMTEMPLATE lpdit;
+    LPWORD lpw;
+    LPWSTR lpwsz;
+    LRESULT ret;
+    int nchar;
 
-	if (2 == argc)
-		std::cout << output.
-		    size() << " drawing pages in VSD document " << std::
-		    endl;
+    hgbl = GlobalAlloc(GMEM_ZEROINIT, 1024);
+    if (!hgbl)
+        return -1;
+ 
+    lpdt = (LPDLGTEMPLATE)GlobalLock(hgbl);
+ 
+    lpdt->style = WS_POPUP | WS_BORDER | WS_SYSMENU | DS_MODALFRAME | WS_CAPTION;
+    lpdt->cdit = 3;         // Number of controls
+    lpdt->x  = 10;  lpdt->y  = 10;
+    lpdt->cx = 320; lpdt->cy = 100;
+
+    lpw = (LPWORD)(lpdt + 1);
+    *lpw++ = 0;             // No menu
+    *lpw++ = 0;             // Predefined dialog box class (by default)
+
+    lpwsz = (LPWSTR)lpw;
+    nchar = 1 + MultiByteToWideChar(CP_ACP, 0, gszVersion, -1, lpwsz, 50);
+    lpw += nchar;
+
+    lpw = lpwAlign(lpw);   
+    lpdit = (LPDLGITEMTEMPLATE)lpw;
+    lpdit->x  = 10; lpdit->y  = 70;
+    lpdit->cx = 280; lpdit->cy = 20;
+    lpdit->id = IDOK;       // OK button identifier
+    lpdit->style = WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON;
+
+    lpw = (LPWORD)(lpdit + 1);
+    *lpw++ = 0xFFFF;
+    *lpw++ = 0x0080;        // Button class
+
+    lpwsz = (LPWSTR)lpw;
+    nchar = 1 + MultiByteToWideChar(CP_ACP, 0, "OK", -1, lpwsz, 50);
+    lpw += nchar;
+    *lpw++ = 0;             // No creation data
+
+    //-----------------------
+    // Define a Combo box.
+    //-----------------------
+    lpw = lpwAlign(lpw);  
+    lpdit = (LPDLGITEMTEMPLATE)lpw;
+    lpdit->x  = 100; lpdit->y  = 10;
+    lpdit->cx = 80; lpdit->cy = 50;
+    lpdit->id = ID_PAGE;    
+    lpdit->style = CBS_DROPDOWN | CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE;
+
+    lpw = (LPWORD)(lpdit + 1);
+    *lpw++ = 0xFFFF;
+    *lpw++ = 0x0085;        // Combo box
+
+    lpwsz = (LPWSTR)lpw;
+    nchar = 1 + MultiByteToWideChar(CP_ACP, 0, "", -1, lpwsz, 50);
+    lpw += nchar;
+    *lpw++ = 0;             // No creation data
+
+    lpw = lpwAlign(lpw);    
+    lpdit = (LPDLGITEMTEMPLATE)lpw;
+    lpdit->x  = 10; lpdit->y  = 10;
+    lpdit->cx = 80; lpdit->cy = 20;
+    lpdit->id = ID_TEXT;
+    lpdit->style = WS_CHILD | WS_VISIBLE | SS_LEFT;
+
+    lpw = (LPWORD)(lpdit + 1);
+    *lpw++ = 0xFFFF;
+    *lpw++ = 0x0082;        // Static text
+
+    for (lpwsz = (LPWSTR)lpw; *lpwsz++ = (WCHAR)*lpszMessage++;);
+    lpw = (LPWORD)lpwsz;
+    *lpw++ = 0;             // No creation data
+
+    GlobalUnlock(hgbl); 
+    ret = DialogBoxIndirect(hinst, 
+                           (LPDLGTEMPLATE)hgbl, 
+                           hwndOwner, 
+                           (DLGPROC)PageDlgProc); 
+    GlobalFree(hgbl); 
+		
+	}
 	else {
 		unsigned page = 0;
-		if (4 == argc) {
-			page = atoi(argv[3]) - 1;
-			if ((0 > page) | (page >= output.size())) {
-			      std:cerr <<
-				    "ERROR: Please choose a drawing page number between 1 and "
-				    << output.size() << "." << std::endl;
-				return 1;
-			}
-		}
 		ofstream svgfile;
-		svgfile.open(argv[2]);
+		svgfile.open(szTmpSvg);
 		svgfile <<
 		    "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n";
 		svgfile <<
@@ -137,28 +254,43 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 		svgfile << output[page].cstr() << std::endl;
 		svgfile.close();
-	} */
+	}
 
 	return 0;
 }
 
-PSZ get_multibyte_for_wide_character(LPWSTR pathw)
+void ExitWithError(const char *msg)
 {
-	UINT acp = GetACP();
-	int nPathLenUnicode = lstrlenW( pathw ); 
-	int nPathLen = WideCharToMultiByte( acp, 
-	0, 
-	pathw,
-	nPathLenUnicode,
-	NULL, 0, 
-	NULL, NULL ); 
-	PSZ pszPathA = new char[ nPathLen ];
-	WideCharToMultiByte( acp, 
-	0, 
-	pathw, 
-	nPathLenUnicode,
-	pszPathA, 
-	nPathLen,
-	NULL, NULL );
-		return pszPathA;
+	MessageBox(NULL, msg,
+			   gszVersion, MB_ICONERROR);
+   exit(1);
+}
+
+BOOL CALLBACK PageDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+   switch(msg)
+   {
+	   case WM_INITDIALOG:
+		SendMessage(GetDlgItem(hDlg, ID_PAGE), (UINT) CB_ADDSTRING, (WPARAM) 0, (LPARAM) L"1");
+		SendMessage(GetDlgItem(hDlg, ID_PAGE), (UINT) CB_ADDSTRING, (WPARAM) 0, (LPARAM) L"2");
+		SendMessage(GetDlgItem(hDlg, ID_PAGE), (UINT) CB_SETCURSEL, (WPARAM) 0, (LPARAM) 0);
+		SetFocus(GetDlgItem(hDlg, ID_PAGE));
+		return true;
+       case WM_DESTROY:
+           EndDialog(hDlg, 0);
+		   MessageBox(NULL, "WM_DESTROY", "", MB_ICONERROR);
+           return TRUE;
+   }
+   return FALSE;
+}
+
+LPWORD lpwAlign(LPWORD lpIn)
+{
+    ULONG ul;
+
+    ul = (ULONG)lpIn;
+    ul ++;
+    ul >>=1;
+    ul <<=1;
+    return (LPWORD)ul;
 }
