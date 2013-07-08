@@ -1,1 +1,1 @@
-SUBDIRS = installer src
+SUBDIRS = data installer src

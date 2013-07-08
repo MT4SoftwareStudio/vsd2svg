@@ -5,7 +5,10 @@ AC_PREREQ([2.67])
 AC_INIT([vsd2svg], [0.1.0], [sdteffen@sdteffen.de])
 AM_INIT_AUTOMAKE([foreign -Wall -Werror])
 AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_FILES([Makefile installer/Makefile installer/macosx/Makefile \
+AC_CONFIG_FILES([Makefile data/Makefile data/icons/Makefile \
+	data/icons/16x16/Makefile data/icons/32x32/Makefile \
+	data/icons/48x48/Makefile data/icons/256x256/Makefile \
+	installer/Makefile installer/macosx/Makefile \
 	installer/rpm/Makefile \
 	src/Makefile])
 

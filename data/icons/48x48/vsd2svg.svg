@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="48px"
+   height="48px"
+   id="svg5276"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="vsd2svg.svg"
+   inkscape:export-filename="/home/betrieb/src/vsd2svg/data/icons/48x48/vsd2svg.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
+  <defs
+     id="defs5278" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#0044cc"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="1"
+     inkscape:pageshadow="2"
+     inkscape:zoom="7"
+     inkscape:cx="-1.2857143"
+     inkscape:cy="14.280692"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     inkscape:grid-bbox="true"
+     inkscape:document-units="px"
+     inkscape:window-width="2491"
+     inkscape:window-height="1237"
+     inkscape:window-x="65"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata5281">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="layer1"
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer">
+    <rect
+       style="fill:#0044cc;fill-opacity:1;stroke:none"
+       id="rect5890"
+       width="48"
+       height="48"
+       x="0"
+       y="0" />
+    <text
+       xml:space="preserve"
+       style="font-size:12.28370094px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
+       x="24.290897"
+       y="13.116809"
+       id="text5303"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan5305"
+         x="24.290897"
+         y="13.116809"
+         style="font-weight:bold;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Bold">VSD</tspan><tspan
+         sodipodi:role="line"
+         x="24.290897"
+         y="28.471436"
+         id="tspan5815"
+         style="font-weight:bold;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Bold">↓</tspan><tspan
+         sodipodi:role="line"
+         x="24.290897"
+         y="43.826061"
+         id="tspan5817"
+         style="font-weight:bold;text-align:center;text-anchor:middle;-inkscape-font-specification:Sans Bold">SVG</tspan></text>
+    <rect
+       style="fill:none;stroke:#ffffff;stroke-width:0.7752232;stroke-opacity:1"
+       id="rect5819"
+       width="31.224777"
+       height="13.224778"
+       x="8.3876114"
+       y="1.6018972" />
+    <rect
+       style="fill:none;stroke:#ffffff;stroke-width:0.7752232;stroke-opacity:1"
+       id="rect5819-3"
+       width="31.224777"
+       height="13.224778"
+       x="8.8161831"
+       y="32.959038" />
+  </g>
+</svg>
