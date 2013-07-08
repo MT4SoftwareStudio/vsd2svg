@@ -26,8 +26,9 @@
     
 #define ID_PAGE   100
 #define ID_TEXT   200
-
-BOOL DeleteFileWithMessage(const char*);void ExitWithError(const char *);
-void GetTempFilePath(char *);LPWORD lpwAlign(LPWORD);
-BOOL CALLBACK PageDlgProc(HWND, UINT, WPARAM, LPARAM);
-int WritePage(unsigned);
+    BOOL DeleteFileWithMessage(const char *);
+void ExitWithError(const char *);
+void GetTempFilePath(char *);
+LPWORD lpwAlign(LPWORD);
+BOOL CALLBACK PageDlgProc(HWND, UINT, WPARAM, LPARAM);
+int WritePage(unsigned);

@@ -44,7 +44,7 @@ libvisio::VSDStringVector output;
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		   LPSTR lpCmdLine, int nCmdShow)
 {
-	struct stat statbuf;	
+	struct stat statbuf;
 	LPWSTR *szArglist = NULL;
 	int nArgs;
 	wchar_t visiopathw[MAX_PATH] = { 0 };
@@ -76,7 +76,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		ofn.hwndOwner = hwnd;
 		ofn.lpstrFile = visiopathw;
 		ofn.nMaxFile = MAX_PATH;
-		ofn.lpstrFilter = L"Visio (*.VSD)\0*.VSD\0All (*.*)\0*.*\0";
+		ofn.lpstrFilter =
+		    L"Visio (*.VSD)\0*.VSD\0All (*.*)\0*.*\0";
 		ofn.nFilterIndex = 1;
 		ofn.lpstrFileTitle = NULL;
 		ofn.nMaxFileTitle = 0;
@@ -86,7 +87,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		if (GetOpenFileNameW(&ofn) != TRUE)
 			return 1;
 	}
-	
+
 	GetTempFilePath(szTmpVisio);
 
 	iRetVal =
@@ -94,7 +95,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 				MAX_PATH);
 	if (iRetVal > MAX_PATH || 0 == iRetVal)
 		ExitWithError("ERROR: MultiByteToWideChar failed");
-	
+
 	if (0 == CopyFileW(visiopathw, lpwTmpVisio, FALSE))
 		ExitWithError("ERROR: CopyFileW failed");
 
@@ -127,9 +128,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		return 1;
 	}
 	if (0 == DeleteFileA(szTmpVisio))
-			MessageBox(NULL, "ERROR: DeleteFile failed",
-				   gszVersion, MB_ICONERROR);
-	
+		MessageBox(NULL, "ERROR: DeleteFile failed",
+			   gszVersion, MB_ICONERROR);
+
 	if (output.empty()) {
 		ExitWithError("ERROR: No SVG document generated!");
 	}
@@ -162,8 +163,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		lpdt->cy = 50;
 
 		lpw = (LPWORD) (lpdt + 1);
-		*lpw++ = 0;	
-		*lpw++ = 0;	
+		*lpw++ = 0;
+		*lpw++ = 0;
 
 		lpwsz = (LPWSTR) lpw;
 		nchar =
@@ -189,8 +190,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		    1 + MultiByteToWideChar(CP_ACP, 0, "OK", -1, lpwsz,
 					    50);
 		lpw += nchar;
-		*lpw++ = 0;	
-		
+		*lpw++ = 0;
+
 		lpw = lpwAlign(lpw);
 		lpdit = (LPDLGITEMTEMPLATE) lpw;
 		lpdit->x = 100;
@@ -230,7 +231,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		nchar =
 		    1 + MultiByteToWideChar(CP_ACP, 0, "", -1, lpwsz, 50);
 		lpw += nchar;
-		*lpw++ = 0;	
+		*lpw++ = 0;
 
 		lpw = lpwAlign(lpw);
 		lpdit = (LPDLGITEMTEMPLATE) lpw;
@@ -248,7 +249,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		for (lpwsz = (LPWSTR) lpw;
 		     *lpwsz++ = (WCHAR) * lpszMessage++;);
 		lpw = (LPWORD) lpwsz;
-		*lpw++ = 0;	
+		*lpw++ = 0;
 
 		GlobalUnlock(hgbl);
 		ret = DialogBoxIndirect(hinst,
@@ -262,69 +263,69 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	return 0;
 }
 
-int WritePage(unsigned page) 
+int WritePage(unsigned page)
 {
 	ofstream svgfile;
-		char szTmpSvg[MAX_PATH];
-			wchar_t lpwTmpSvg[MAX_PATH];
-			wchar_t lpwSvg[MAX_PATH] = {0};
-		int iRetVal = 0;
-		OPENFILENAMEW ofn;
-		HWND hwnd;
-		
-		GetTempFilePath(szTmpSvg);
-		
-		svgfile.open(szTmpSvg);
-		svgfile <<
-		    "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n";
-		svgfile <<
-		    "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"";
-		svgfile <<
-		    " \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n";
+	char szTmpSvg[MAX_PATH];
+	wchar_t lpwTmpSvg[MAX_PATH];
+	wchar_t lpwSvg[MAX_PATH] = { 0 };
+	int iRetVal = 0;
+	OPENFILENAMEW ofn;
+	HWND hwnd;
 
-		svgfile << output[page].cstr() << std::endl;
-		svgfile.close();
-		
-		iRetVal =
+	GetTempFilePath(szTmpSvg);
+
+	svgfile.open(szTmpSvg);
+	svgfile <<
+	    "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n";
+	svgfile << "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"";
+	svgfile <<
+	    " \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n";
+
+	svgfile << output[page].cstr() << std::endl;
+	svgfile.close();
+
+	iRetVal =
 	    MultiByteToWideChar(CP_ACP, 0, szTmpSvg, -1, lpwTmpSvg,
 				MAX_PATH);
-	if (iRetVal > MAX_PATH || 0 == iRetVal)
-	{
+	if (iRetVal > MAX_PATH || 0 == iRetVal) {
 		DeleteFileWithMessage(szTmpSvg);
 		ExitWithError("ERROR: MultiByteToWideChar failed");
 	}
-	
-		ZeroMemory(&ofn, sizeof(ofn));
-		ZeroMemory(&hwnd, sizeof(hwnd));
-		ofn.lStructSize = sizeof(ofn);
-		ofn.hwndOwner = hwnd;
-		ofn.lpstrFile = lpwSvg;
-		ofn.nMaxFile = MAX_PATH;
-		ofn.lpstrFilter = L"Scalable Vector Graphics (*.SVG)\0*.SVG\0All (*.*)\0*.*\0";
-		ofn.nFilterIndex = 1;
-		ofn.lpstrFileTitle = NULL;
-		ofn.nMaxFileTitle = 0;
-		ofn.lpstrInitialDir = NULL;
-		ofn.Flags = OFN_OVERWRITEPROMPT;
 
-		if (GetSaveFileNameW(&ofn) != TRUE)
-			return 1;
-	
-	if (0 == CopyFileW(lpwTmpSvg, lpwSvg, FALSE))
-	{
+	ZeroMemory(&ofn, sizeof(ofn));
+	ZeroMemory(&hwnd, sizeof(hwnd));
+	ofn.lStructSize = sizeof(ofn);
+	ofn.hwndOwner = hwnd;
+	ofn.lpstrFile = lpwSvg;
+	ofn.nMaxFile = MAX_PATH;
+	ofn.lpstrFilter =
+	    L"Scalable Vector Graphics (*.SVG)\0*.SVG\0All (*.*)\0*.*\0";
+	ofn.nFilterIndex = 1;
+	ofn.lpstrFileTitle = NULL;
+	ofn.nMaxFileTitle = 0;
+	ofn.lpstrInitialDir = NULL;
+	ofn.Flags = OFN_OVERWRITEPROMPT;
+
+	if (GetSaveFileNameW(&ofn) != TRUE)
+		return 1;
+
+	if (0 == CopyFileW(lpwTmpSvg, lpwSvg, FALSE)) {
 		DeleteFileWithMessage(szTmpSvg);
 		ExitWithError("ERROR: CopyFileW failed");
-	}	
-		
+	}
+
 	DeleteFileWithMessage(szTmpSvg);
-		
-		return 0;
+
+	return 0;
 }
 
-BOOL DeleteFileWithMessage(const char *file) {
+BOOL DeleteFileWithMessage(const char *file)
+{
 	BOOL result = DeleteFileA(file);
-	if(0 == result)
-		MessageBox(NULL, "ERROR: DeleteFile failed", gszVersion, MB_ICONERROR);
+	if (0 == result)
+		MessageBox(NULL, "ERROR: DeleteFile failed", gszVersion,
+			   MB_ICONERROR);
 	return result;
 }
 
@@ -334,17 +335,17 @@ void ExitWithError(const char *msg)
 	exit(1);
 }
 
-void GetTempFilePath(char *path) {
+void GetTempFilePath(char *path)
+{
 	char lpTempPathBuffer[MAX_PATH];
 	DWORD dwRetVal = 0;
-		
+
 	dwRetVal = GetTempPathA(MAX_PATH, lpTempPathBuffer);
 	if (dwRetVal > MAX_PATH || 0 == dwRetVal) {
 		ExitWithError("ERROR: GetTempPath failed.");
 	}
 
-	if (0 ==
-	    GetTempFileNameA(lpTempPathBuffer, "vsd2svg", 0, path)) {
+	if (0 == GetTempFileNameA(lpTempPathBuffer, "vsd2svg", 0, path)) {
 		ExitWithError("ERROR: GetTempFileName failed.");
 	}
 }
@@ -354,29 +355,27 @@ BOOL CALLBACK PageDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
 {
 	switch (msg) {
 	case WM_INITDIALOG:
-		HWND hwndOwner; 
-		RECT rc, rcDlg, rcOwner; 
+		HWND hwndOwner;
+		RECT rc, rcDlg, rcOwner;
 
-		if ((hwndOwner = GetParent(hDlg)) == NULL) 
-    {
-        hwndOwner = GetDesktopWindow(); 
-    }
+		if ((hwndOwner = GetParent(hDlg)) == NULL) {
+			hwndOwner = GetDesktopWindow();
+		}
 
-    GetWindowRect(hwndOwner, &rcOwner); 
-    GetWindowRect(hDlg, &rcDlg); 
-    CopyRect(&rc, &rcOwner); 
+		GetWindowRect(hwndOwner, &rcOwner);
+		GetWindowRect(hDlg, &rcDlg);
+		CopyRect(&rc, &rcOwner);
 
-    OffsetRect(&rcDlg, -rcDlg.left, -rcDlg.top); 
-    OffsetRect(&rc, -rc.left, -rc.top); 
-    OffsetRect(&rc, -rcDlg.right, -rcDlg.bottom); 
+		OffsetRect(&rcDlg, -rcDlg.left, -rcDlg.top);
+		OffsetRect(&rc, -rc.left, -rc.top);
+		OffsetRect(&rc, -rcDlg.right, -rcDlg.bottom);
 
-    SetWindowPos(hDlg, 
-                 HWND_TOP, 
-                 rcOwner.left + (rc.right / 2), 
-                 rcOwner.top + (rc.bottom / 2), 
-                 0, 0,  
-                 SWP_NOSIZE); 
-		
+		SetWindowPos(hDlg,
+			     HWND_TOP,
+			     rcOwner.left + (rc.right / 2),
+			     rcOwner.top + (rc.bottom / 2),
+			     0, 0, SWP_NOSIZE);
+
 		SendMessage(GetDlgItem(hDlg, ID_PAGE), (UINT) CB_ADDSTRING,
 			    (WPARAM) 0, (LPARAM) L"1");
 		SendMessage(GetDlgItem(hDlg, ID_PAGE), (UINT) CB_ADDSTRING,
@@ -386,13 +385,12 @@ BOOL CALLBACK PageDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
 		SetFocus(GetDlgItem(hDlg, ID_PAGE));
 		return true;
 	case WM_COMMAND:
-		switch(LOWORD(wParam))
-		{
-			case IDOK:
-			case IDCANCEL:
-				DestroyWindow(hDlg);
-				return TRUE;
-				break;
+		switch (LOWORD(wParam)) {
+		case IDOK:
+		case IDCANCEL:
+			DestroyWindow(hDlg);
+			return TRUE;
+			break;
 		}
 		break;
 	}
