@@ -39,21 +39,17 @@ using namespace std;
 
 char gszVersion[] = "vsd2svg-win 0.1.0";
 
+libvisio::VSDStringVector output;
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		   LPSTR lpCmdLine, int nCmdShow)
 {
-	int drawingpageno = 0;
-	struct stat statbuf;
-	libvisio::VSDStringVector output;
+	struct stat statbuf;	
 	LPWSTR *szArglist = NULL;
 	int nArgs;
 	wchar_t visiopathw[MAX_PATH] = { 0 };
 	wchar_t lpwTmpVisio[MAX_PATH];
-	wchar_t lpwTmpSvg[MAX_PATH];
-	char lpTempPathBuffer[MAX_PATH];
 	char szTmpVisio[MAX_PATH];
-	char szTmpSvg[MAX_PATH];
-	DWORD dwRetVal = 0;
 	int iRetVal = 0;
 	UINT uiACP = GetACP();
 
@@ -75,11 +71,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		HWND hwnd;
 
 		ZeroMemory(&ofn, sizeof(ofn));
+		ZeroMemory(&hwnd, sizeof(hwnd));
 		ofn.lStructSize = sizeof(ofn);
 		ofn.hwndOwner = hwnd;
 		ofn.lpstrFile = visiopathw;
 		ofn.nMaxFile = MAX_PATH;
-		ofn.lpstrFilter = L"Visio *.VSD\0*.VSD\0All\0*.*\0";
+		ofn.lpstrFilter = L"Visio (*.VSD)\0*.VSD\0All (*.*)\0*.*\0";
 		ofn.nFilterIndex = 1;
 		ofn.lpstrFileTitle = NULL;
 		ofn.nMaxFileTitle = 0;
@@ -89,30 +86,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		if (GetOpenFileNameW(&ofn) != TRUE)
 			return 1;
 	}
+	
+	GetTempFilePath(szTmpVisio);
 
-	dwRetVal = GetTempPathA(MAX_PATH, lpTempPathBuffer);
-	if (dwRetVal > MAX_PATH || 0 == dwRetVal) {
-		ExitWithError("ERROR: GetTempPath failed.");
-	}
-
-	if (0 ==
-	    GetTempFileNameA(lpTempPathBuffer, "vsd2svg", 0, szTmpVisio)) {
-		ExitWithError("ERROR: GetTempFileName failed.");
-	}
-	if (0 ==
-	    GetTempFileNameA(lpTempPathBuffer, "vsd2svg", 0, szTmpSvg)) {
-		ExitWithError("ERROR: GetTempFilename failed.");
-	}
 	iRetVal =
 	    MultiByteToWideChar(uiACP, 0, szTmpVisio, -1, lpwTmpVisio,
 				MAX_PATH);
 	if (iRetVal > MAX_PATH || 0 == iRetVal)
 		ExitWithError("ERROR: MultiByteToWideChar failed");
-	iRetVal =
-	    MultiByteToWideChar(uiACP, 0, szTmpSvg, -1, lpwTmpSvg,
-				MAX_PATH);
-	if (iRetVal > MAX_PATH || 0 == iRetVal)
-		ExitWithError("ERROR: MultiByteToWideChar failed");
+	
 	if (0 == CopyFileW(visiopathw, lpwTmpVisio, FALSE))
 		ExitWithError("ERROR: CopyFileW failed");
 
@@ -144,23 +126,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 				   gszVersion, MB_ICONERROR);
 		return 1;
 	}
-
-	if (output.empty()) {
-		MessageBox(NULL,
-			   "ERROR: No SVG document generated!",
-			   gszVersion, MB_ICONERROR);
-		if (0 == DeleteFileA(szTmpVisio))
+	if (0 == DeleteFileA(szTmpVisio))
 			MessageBox(NULL, "ERROR: DeleteFile failed",
 				   gszVersion, MB_ICONERROR);
-		return 1;
+	
+	if (output.empty()) {
+		ExitWithError("ERROR: No SVG document generated!");
 	}
 
 	if (0 < output.size()) {
-
 		HINSTANCE hinst = NULL;
 		HWND hwndOwner = NULL;
-		LPSTR lpszMessage = "Select a drawing page";
-
+		const char *lpszMessage = "Select a drawing page";
 		HGLOBAL hgbl;
 		LPDLGTEMPLATE lpdt;
 		LPDLGITEMTEMPLATE lpdit;
@@ -178,15 +155,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		lpdt->style =
 		    WS_POPUP | WS_BORDER | WS_SYSMENU | DS_MODALFRAME |
 		    WS_CAPTION;
-		lpdt->cdit = 3;	// Number of controls
-		lpdt->x = 10;
-		lpdt->y = 10;
-		lpdt->cx = 320;
-		lpdt->cy = 100;
+		lpdt->cdit = 4;	// Number of controls
+		lpdt->x = 0;
+		lpdt->y = 0;
+		lpdt->cx = 155;
+		lpdt->cy = 50;
 
 		lpw = (LPWORD) (lpdt + 1);
-		*lpw++ = 0;	// No menu
-		*lpw++ = 0;	// Predefined dialog box class (by default)
+		*lpw++ = 0;	
+		*lpw++ = 0;	
 
 		lpwsz = (LPWSTR) lpw;
 		nchar =
@@ -196,11 +173,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 		lpw = lpwAlign(lpw);
 		lpdit = (LPDLGITEMTEMPLATE) lpw;
-		lpdit->x = 10;
-		lpdit->y = 70;
-		lpdit->cx = 280;
-		lpdit->cy = 20;
-		lpdit->id = IDOK;	// OK button identifier
+		lpdit->x = 45;
+		lpdit->y = 35;
+		lpdit->cx = 50;
+		lpdit->cy = 12;
+		lpdit->id = IDOK;
 		lpdit->style = WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON;
 
 		lpw = (LPWORD) (lpdit + 1);
@@ -212,16 +189,33 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		    1 + MultiByteToWideChar(CP_ACP, 0, "OK", -1, lpwsz,
 					    50);
 		lpw += nchar;
-		*lpw++ = 0;	// No creation data
+		*lpw++ = 0;	
+		
+		lpw = lpwAlign(lpw);
+		lpdit = (LPDLGITEMTEMPLATE) lpw;
+		lpdit->x = 100;
+		lpdit->y = 35;
+		lpdit->cx = 50;
+		lpdit->cy = 12;
+		lpdit->id = IDCANCEL;
+		lpdit->style = WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON;
 
-		//-----------------------
-		// Define a Combo box.
-		//-----------------------
+		lpw = (LPWORD) (lpdit + 1);
+		*lpw++ = 0xFFFF;
+		*lpw++ = 0x0080;	// Button class
+
+		lpwsz = (LPWSTR) lpw;
+		nchar =
+		    1 + MultiByteToWideChar(CP_ACP, 0, "Cancel", -1, lpwsz,
+					    50);
+		lpw += nchar;
+		*lpw++ = 0;
+
 		lpw = lpwAlign(lpw);
 		lpdit = (LPDLGITEMTEMPLATE) lpw;
 		lpdit->x = 100;
 		lpdit->y = 10;
-		lpdit->cx = 80;
+		lpdit->cx = 50;
 		lpdit->cy = 50;
 		lpdit->id = ID_PAGE;
 		lpdit->style =
@@ -236,7 +230,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		nchar =
 		    1 + MultiByteToWideChar(CP_ACP, 0, "", -1, lpwsz, 50);
 		lpw += nchar;
-		*lpw++ = 0;	// No creation data
+		*lpw++ = 0;	
 
 		lpw = lpwAlign(lpw);
 		lpdit = (LPDLGITEMTEMPLATE) lpw;
@@ -254,7 +248,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		for (lpwsz = (LPWSTR) lpw;
 		     *lpwsz++ = (WCHAR) * lpszMessage++;);
 		lpw = (LPWORD) lpwsz;
-		*lpw++ = 0;	// No creation data
+		*lpw++ = 0;	
 
 		GlobalUnlock(hgbl);
 		ret = DialogBoxIndirect(hinst,
@@ -262,9 +256,24 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 					hwndOwner, (DLGPROC) PageDlgProc);
 		GlobalFree(hgbl);
 
-	} else {
-		unsigned page = 0;
-		ofstream svgfile;
+	}
+	return WritePage(0);
+
+	return 0;
+}
+
+int WritePage(unsigned page) 
+{
+	ofstream svgfile;
+		char szTmpSvg[MAX_PATH];
+			wchar_t lpwTmpSvg[MAX_PATH];
+			wchar_t lpwSvg[MAX_PATH] = {0};
+		int iRetVal = 0;
+		OPENFILENAMEW ofn;
+		HWND hwnd;
+		
+		GetTempFilePath(szTmpSvg);
+		
 		svgfile.open(szTmpSvg);
 		svgfile <<
 		    "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n";
@@ -275,9 +284,48 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 		svgfile << output[page].cstr() << std::endl;
 		svgfile.close();
+		
+		iRetVal =
+	    MultiByteToWideChar(CP_ACP, 0, szTmpSvg, -1, lpwTmpSvg,
+				MAX_PATH);
+	if (iRetVal > MAX_PATH || 0 == iRetVal)
+	{
+		DeleteFileWithMessage(szTmpSvg);
+		ExitWithError("ERROR: MultiByteToWideChar failed");
 	}
+	
+		ZeroMemory(&ofn, sizeof(ofn));
+		ZeroMemory(&hwnd, sizeof(hwnd));
+		ofn.lStructSize = sizeof(ofn);
+		ofn.hwndOwner = hwnd;
+		ofn.lpstrFile = lpwSvg;
+		ofn.nMaxFile = MAX_PATH;
+		ofn.lpstrFilter = L"Scalable Vector Graphics (*.SVG)\0*.SVG\0All (*.*)\0*.*\0";
+		ofn.nFilterIndex = 1;
+		ofn.lpstrFileTitle = NULL;
+		ofn.nMaxFileTitle = 0;
+		ofn.lpstrInitialDir = NULL;
+		ofn.Flags = OFN_OVERWRITEPROMPT;
 
-	return 0;
+		if (GetSaveFileNameW(&ofn) != TRUE)
+			return 1;
+	
+	if (0 == CopyFileW(lpwTmpSvg, lpwSvg, FALSE))
+	{
+		DeleteFileWithMessage(szTmpSvg);
+		ExitWithError("ERROR: CopyFileW failed");
+	}	
+		
+	DeleteFileWithMessage(szTmpSvg);
+		
+		return 0;
+}
+
+BOOL DeleteFileWithMessage(const char *file) {
+	BOOL result = DeleteFileA(file);
+	if(0 == result)
+		MessageBox(NULL, "ERROR: DeleteFile failed", gszVersion, MB_ICONERROR);
+	return result;
 }
 
 void ExitWithError(const char *msg)
@@ -286,11 +334,49 @@ void ExitWithError(const char *msg)
 	exit(1);
 }
 
+void GetTempFilePath(char *path) {
+	char lpTempPathBuffer[MAX_PATH];
+	DWORD dwRetVal = 0;
+		
+	dwRetVal = GetTempPathA(MAX_PATH, lpTempPathBuffer);
+	if (dwRetVal > MAX_PATH || 0 == dwRetVal) {
+		ExitWithError("ERROR: GetTempPath failed.");
+	}
+
+	if (0 ==
+	    GetTempFileNameA(lpTempPathBuffer, "vsd2svg", 0, path)) {
+		ExitWithError("ERROR: GetTempFileName failed.");
+	}
+}
+
 BOOL CALLBACK PageDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
 			  LPARAM lParam)
 {
 	switch (msg) {
 	case WM_INITDIALOG:
+		HWND hwndOwner; 
+		RECT rc, rcDlg, rcOwner; 
+
+		if ((hwndOwner = GetParent(hDlg)) == NULL) 
+    {
+        hwndOwner = GetDesktopWindow(); 
+    }
+
+    GetWindowRect(hwndOwner, &rcOwner); 
+    GetWindowRect(hDlg, &rcDlg); 
+    CopyRect(&rc, &rcOwner); 
+
+    OffsetRect(&rcDlg, -rcDlg.left, -rcDlg.top); 
+    OffsetRect(&rc, -rc.left, -rc.top); 
+    OffsetRect(&rc, -rcDlg.right, -rcDlg.bottom); 
+
+    SetWindowPos(hDlg, 
+                 HWND_TOP, 
+                 rcOwner.left + (rc.right / 2), 
+                 rcOwner.top + (rc.bottom / 2), 
+                 0, 0,  
+                 SWP_NOSIZE); 
+		
 		SendMessage(GetDlgItem(hDlg, ID_PAGE), (UINT) CB_ADDSTRING,
 			    (WPARAM) 0, (LPARAM) L"1");
 		SendMessage(GetDlgItem(hDlg, ID_PAGE), (UINT) CB_ADDSTRING,
@@ -299,10 +385,16 @@ BOOL CALLBACK PageDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
 			    (WPARAM) 0, (LPARAM) 0);
 		SetFocus(GetDlgItem(hDlg, ID_PAGE));
 		return true;
-	case WM_DESTROY:
-		EndDialog(hDlg, 0);
-		MessageBox(NULL, "WM_DESTROY", "", MB_ICONERROR);
-		return TRUE;
+	case WM_COMMAND:
+		switch(LOWORD(wParam))
+		{
+			case IDOK:
+			case IDCANCEL:
+				DestroyWindow(hDlg);
+				return TRUE;
+				break;
+		}
+		break;
 	}
 	return FALSE;
 }
