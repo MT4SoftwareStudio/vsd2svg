@@ -38,7 +38,7 @@
 using namespace std;
 
 char gszVersion[] = "vsd2svg-win 0.1.0";
-
+unsigned giDrawingPageCount = 0;
 libvisio::VSDStringVector output;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
@@ -52,6 +52,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	char szTmpVisio[MAX_PATH];
 	int iRetVal = 0;
 	UINT uiACP = GetACP();
+	HANDLE hReadTest = INVALID_HANDLE_VALUE;
 
 	szArglist = CommandLineToArgvW(GetCommandLineW(), &nArgs);
 	if (NULL == szArglist) {
@@ -59,14 +60,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			   gszVersion, MB_ICONERROR);
 		return -1;
 	}
-	if (4 < nArgs) {
+	if (2 < nArgs) {
 		MessageBox(NULL,
-			   "USAGE: vsd2svg-win [visiofile] [svgfile] [drawingpagenumber]",
+			   "USAGE: vsd2svg-win [visiofile]",
 			   gszVersion, MB_ICONERROR);
 	}
 	if (1 < nArgs) {
-		wcsncpy(visiopathw, szArglist[1], MAX_PATH);
-	} else {
+		hReadTest = CreateFileW(szArglist[1], GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+		if(INVALID_HANDLE_VALUE != hReadTest)
+		{
+			if(!CloseHandle(hReadTest))
+				ExitWithError("CloseHandle failed");
+			wcsncpy(visiopathw, szArglist[1], MAX_PATH);
+		}
+	} 
+	if(INVALID_HANDLE_VALUE == hReadTest) 
+	{
 		OPENFILENAMEW ofn;
 		HWND hwnd;
 
@@ -127,6 +136,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 				   gszVersion, MB_ICONERROR);
 		return 1;
 	}
+	delete(&input);
 	if (0 == DeleteFileA(szTmpVisio))
 		MessageBox(NULL, "ERROR: DeleteFile failed",
 			   gszVersion, MB_ICONERROR);
@@ -135,7 +145,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		ExitWithError("ERROR: No SVG document generated!");
 	}
 
-	if (0 < output.size()) {
+	giDrawingPageCount = output.size();
+	
+	if (0 < giDrawingPageCount) {
 		HINSTANCE hinst = NULL;
 		HWND hwndOwner = NULL;
 		const char *lpszMessage = "Select a drawing page";
@@ -308,7 +320,7 @@ int WritePage(unsigned page)
 	ofn.Flags = OFN_OVERWRITEPROMPT;
 
 	if (GetSaveFileNameW(&ofn) != TRUE)
-		return 1;
+		exit(1);
 
 	if (0 == CopyFileW(lpwTmpSvg, lpwSvg, FALSE)) {
 		DeleteFileWithMessage(szTmpSvg);
@@ -317,7 +329,7 @@ int WritePage(unsigned page)
 
 	DeleteFileWithMessage(szTmpSvg);
 
-	return 0;
+	exit(0);
 }
 
 BOOL DeleteFileWithMessage(const char *file)
@@ -375,21 +387,42 @@ BOOL CALLBACK PageDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
 			     rcOwner.left + (rc.right / 2),
 			     rcOwner.top + (rc.bottom / 2),
 			     0, 0, SWP_NOSIZE);
-
-		SendMessage(GetDlgItem(hDlg, ID_PAGE), (UINT) CB_ADDSTRING,
-			    (WPARAM) 0, (LPARAM) L"1");
-		SendMessage(GetDlgItem(hDlg, ID_PAGE), (UINT) CB_ADDSTRING,
-			    (WPARAM) 0, (LPARAM) L"2");
+		for(unsigned i=0; i < giDrawingPageCount; i++)
+		{
+			char szPages[10];
+			wchar_t lpwPages[10];
+			int iRetVal = 0;
+			
+			snprintf(szPages, 10, "%d", i+1);
+			iRetVal =
+				MultiByteToWideChar(CP_ACP, 0, szPages, -1, lpwPages,
+						10);
+			if (iRetVal > 10 || 0 == iRetVal) {
+				ExitWithError("ERROR: MultiByteToWideChar failed");
+			}
+			SendMessage(GetDlgItem(hDlg, ID_PAGE), (UINT) CB_ADDSTRING,
+			    (WPARAM) 0, (LPARAM) lpwPages);
+		}
 		SendMessage(GetDlgItem(hDlg, ID_PAGE), (UINT) CB_SETCURSEL,
 			    (WPARAM) 0, (LPARAM) 0);
 		SetFocus(GetDlgItem(hDlg, ID_PAGE));
-		return true;
+		return TRUE;
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
 		case IDOK:
+			unsigned page;
+			page = SendMessage(GetDlgItem(hDlg, ID_PAGE),CB_GETCURSEL,(WPARAM)0,(LPARAM)0);
+			DestroyWindow(hDlg);
+			if(CB_ERR == page)
+			{
+				ExitWithError("ERROR: No item is selected");
+			}
+			WritePage(page);
+			return TRUE;
+			break;
 		case IDCANCEL:
 			DestroyWindow(hDlg);
-			return TRUE;
+			exit(1);
 			break;
 		}
 		break;

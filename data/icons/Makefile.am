@@ -1,1 +1,2 @@
 SUBDIRS = 16x16 32x32 48x48 256x256
+EXTRA_DIST = vsd2svg.ico
