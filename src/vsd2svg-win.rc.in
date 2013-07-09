@@ -1,0 +1,26 @@
+1 ICON "../data/icons/vsd2svg.ico"
+
+2 VERSIONINFO
+FILEVERSION     @V2S_MAJOR_VERSION@,@V2S_MINOR_VERSION@,@V2S_MICRO_VERSION@,0
+PRODUCTVERSION  @V2S_MAJOR_VERSION@,@V2S_MINOR_VERSION@,@V2S_MICRO_VERSION@,0
+BEGIN
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "080904E4"
+    BEGIN
+      VALUE "CompanyName", "dia-installer.de"
+      VALUE "FileDescription", "Convert Visio *.vsd files to SVG"
+      VALUE "FileVersion", "@V2S_MAJOR_VERSION@.@V2S_MINOR_VERSION@.@V2S_MICRO_VERSION@.0"
+      VALUE "InternalName", "vsd2svg-win"
+      VALUE "LegalCopyright", "Copyright (c) 2013 Steffen Macke, other contributors"
+      VALUE "OriginalFilename", "vsd2svg-win.exe"
+      VALUE "ProductName", "vsd2svg"
+      VALUE "ProductVersion", "@V2S_MAJOR_VERSION@,@V2S_MINOR_VERSION@,@V2S_MICRO_VERSION@"
+    END
+  END
+
+  BLOCK "VarFileInfo"
+  BEGIN
+    VALUE "Translation", 0x809, 1252
+  END
+END
