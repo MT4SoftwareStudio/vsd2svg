@@ -3,6 +3,8 @@ autom4te.cache
 aclocal.m4
 *.log
 config.status
+config.guess
+config.sub
 configure
 configure.scan
 depcomp
@@ -21,6 +23,8 @@ src/*~
 src/.deps
 src/vsd2svg
 src/*.exe
+src/*.rc
 src/*.o
+src/.libs
 src/*.out
 
