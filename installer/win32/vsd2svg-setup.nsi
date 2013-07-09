@@ -98,7 +98,6 @@ Section -Main SEC0000
 	File libwpd-stream-0.9.dll
 	File libwpg-0.2.dll
 	File libxml2-2.dll
-	File vsd2svg-setup-0.1.0-1.exe
 	File vsd2svg-win.exe
 	File vsd2svg.exe
 	File zlib1.dll
@@ -177,7 +176,6 @@ Section /o -un.Main UNSEC0000
 	Delete /REBOOTOK $INSTDIR\bin\libwpd-stream-0.9.dll
 	Delete /REBOOTOK $INSTDIR\bin\libwpg-0.2.dll
 	Delete /REBOOTOK $INSTDIR\bin\libxml2-2.dll
-	Delete /REBOOTOK $INSTDIR\bin\vsd2svg-setup-0.1.0-1.exe
 	Delete /REBOOTOK $INSTDIR\bin\vsd2svg-win.exe
 	Delete /REBOOTOK $INSTDIR\bin\vsd2svg.exe
 	Delete /REBOOTOK $INSTDIR\bin\zlib1.dll
