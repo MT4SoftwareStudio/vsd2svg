@@ -66,16 +66,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			   gszVersion, MB_ICONERROR);
 	}
 	if (1 < nArgs) {
-		hReadTest = CreateFileW(szArglist[1], GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-		if(INVALID_HANDLE_VALUE != hReadTest)
-		{
-			if(!CloseHandle(hReadTest))
+		hReadTest =
+		    CreateFileW(szArglist[1], GENERIC_READ, 0, NULL,
+				OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL,
+				NULL);
+		if (INVALID_HANDLE_VALUE != hReadTest) {
+			if (!CloseHandle(hReadTest))
 				ExitWithError("CloseHandle failed");
 			wcsncpy(visiopathw, szArglist[1], MAX_PATH);
 		}
-	} 
-	if(INVALID_HANDLE_VALUE == hReadTest) 
-	{
+	}
+	if (INVALID_HANDLE_VALUE == hReadTest) {
 		OPENFILENAMEW ofn;
 		HWND hwnd;
 
@@ -146,7 +147,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	}
 
 	giDrawingPageCount = output.size();
-	
+
 	if (0 < giDrawingPageCount) {
 		HINSTANCE hinst = NULL;
 		HWND hwndOwner = NULL;
@@ -387,21 +388,22 @@ BOOL CALLBACK PageDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
 			     rcOwner.left + (rc.right / 2),
 			     rcOwner.top + (rc.bottom / 2),
 			     0, 0, SWP_NOSIZE);
-		for(unsigned i=0; i < giDrawingPageCount; i++)
-		{
+		for (unsigned i = 0; i < giDrawingPageCount; i++) {
 			char szPages[10];
 			wchar_t lpwPages[10];
 			int iRetVal = 0;
-			
-			snprintf(szPages, 10, "%d", i+1);
+
+			snprintf(szPages, 10, "%d", i + 1);
 			iRetVal =
-				MultiByteToWideChar(CP_ACP, 0, szPages, -1, lpwPages,
-						10);
+			    MultiByteToWideChar(CP_ACP, 0, szPages, -1,
+						lpwPages, 10);
 			if (iRetVal > 10 || 0 == iRetVal) {
-				ExitWithError("ERROR: MultiByteToWideChar failed");
+				ExitWithError
+				    ("ERROR: MultiByteToWideChar failed");
 			}
-			SendMessage(GetDlgItem(hDlg, ID_PAGE), (UINT) CB_ADDSTRING,
-			    (WPARAM) 0, (LPARAM) lpwPages);
+			SendMessage(GetDlgItem(hDlg, ID_PAGE),
+				    (UINT) CB_ADDSTRING, (WPARAM) 0,
+				    (LPARAM) lpwPages);
 		}
 		SendMessage(GetDlgItem(hDlg, ID_PAGE), (UINT) CB_SETCURSEL,
 			    (WPARAM) 0, (LPARAM) 0);
@@ -411,11 +413,14 @@ BOOL CALLBACK PageDlgProc(HWND hDlg, UINT msg, WPARAM wParam,
 		switch (LOWORD(wParam)) {
 		case IDOK:
 			unsigned page;
-			page = SendMessage(GetDlgItem(hDlg, ID_PAGE),CB_GETCURSEL,(WPARAM)0,(LPARAM)0);
+			page =
+			    SendMessage(GetDlgItem(hDlg, ID_PAGE),
+					CB_GETCURSEL, (WPARAM) 0,
+					(LPARAM) 0);
 			DestroyWindow(hDlg);
-			if(CB_ERR == page)
-			{
-				ExitWithError("ERROR: No item is selected");
+			if (CB_ERR == page) {
+				ExitWithError
+				    ("ERROR: No item is selected");
 			}
 			WritePage(page);
 			return TRUE;
