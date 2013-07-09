@@ -44,7 +44,7 @@ AC_CONFIG_FILES([Makefile build/Makefile build/win32/Makefile \
 	data/Makefile data/icons/Makefile \
 	data/icons/16x16/Makefile data/icons/32x32/Makefile \
 	data/icons/48x48/Makefile data/icons/256x256/Makefile \
-	installer/Makefile installer/macosx/Makefile \
+	installer/Makefile installer/macosx/Makefile installer/win32/Makefile \
 	installer/rpm/Makefile src/vsd2svg-win.rc\
 	src/Makefile])
 

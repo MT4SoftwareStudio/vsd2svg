@@ -1,1 +1,1 @@
-SUBDIRS = macosx rpm
+SUBDIRS = macosx rpm win32

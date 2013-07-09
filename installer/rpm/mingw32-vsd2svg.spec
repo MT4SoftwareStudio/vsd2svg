@@ -6,7 +6,7 @@
 %define __os_install_post %{_mingw32_debug_install_post} \
                           %{_mingw32_install_post}
 
-Name:           mingw32-vsd2vg
+Name:           mingw32-vsd2svg
 Summary:        Convert VSD files into SVG files
 Version:        0.1.0
 Release:        0
