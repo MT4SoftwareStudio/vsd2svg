@@ -7,38 +7,12 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="16px"
-   height="16px"
-   id="svg4729"
    version="1.1"
-   inkscape:version="0.48.4 r9939"
-   sodipodi:docname="vsd2svg.svg"
-   inkscape:export-filename="/home/betrieb/src/vsd2svg/data/icons/16x16/vsd2svg.png"
-   inkscape:export-xdpi="90"
-   inkscape:export-ydpi="90">
+   width="16"
+   height="16"
+   id="svg4729">
   <defs
      id="defs4731" />
-  <sodipodi:namedview
-     id="base"
-     pagecolor="#0044cc"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageopacity="1"
-     inkscape:pageshadow="2"
-     inkscape:zoom="5.6568542"
-     inkscape:cx="0.026237553"
-     inkscape:cy="8.2514"
-     inkscape:current-layer="layer1"
-     showgrid="true"
-     inkscape:grid-bbox="true"
-     inkscape:document-units="px"
-     inkscape:window-width="2491"
-     inkscape:window-height="1237"
-     inkscape:window-x="65"
-     inkscape:window-y="24"
-     inkscape:window-maximized="1" />
   <metadata
      id="metadata4734">
     <rdf:RDF>
@@ -52,30 +26,23 @@
     </rdf:RDF>
   </metadata>
   <g
-     id="layer1"
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer">
+     id="layer1">
     <rect
-       style="fill:#0044cc;fill-opacity:1;stroke:none"
-       id="rect5892"
        width="16"
        height="16"
        x="0"
        y="0"
-       inkscape:export-filename="/home/betrieb/src/vsd2svg/data/icons/16x16/vsd2svg.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90" />
+       id="rect5892"
+       style="fill:#0044cc;fill-opacity:1;stroke:none" />
     <text
-       xml:space="preserve"
-       style="font-size:7.57992125px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
        x="8.2609301"
        y="10.759195"
        id="text4737"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
+       xml:space="preserve"
+       style="font-size:7.57992125px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"><tspan
          x="8.2609301"
          y="10.759195"
-         style="font-size:7.57992125px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#ffffff;font-family:Sans;-inkscape-font-specification:Sans Bold"
-         id="tspan5251">V2S</tspan></text>
+         id="tspan5251"
+         style="font-size:7.57992125px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:center;line-height:125%;writing-mode:lr-tb;text-anchor:middle;fill:#ffffff;font-family:Sans;-inkscape-font-specification:Sans Bold">V2S</tspan></text>
   </g>
 </svg>
