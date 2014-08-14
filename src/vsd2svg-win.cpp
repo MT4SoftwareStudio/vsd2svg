@@ -129,7 +129,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		return 1;
 	}
 
-    librevenge::RVNGSVGDrawingGenerator generator(output, "svg");
+	librevenge::RVNGSVGDrawingGenerator generator(output, "svg");
 	if (!libvisio::VisioDocument::parse(&input, &generator)) {
 		MessageBox(NULL,
 			   "ERROR: SVG generation failed!",
