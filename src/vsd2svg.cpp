@@ -27,9 +27,10 @@
 #include <fstream>
 #include <iostream>
 #include <sys/stat.h>
+#include <librevenge-stream/librevenge-stream.h>
+#include <librevenge-generators/librevenge-generators.h>
+#include <librevenge/librevenge.h>
 #include <libvisio/libvisio.h>
-#include <libwpd-stream/libwpd-stream.h>
-#include <libwpd/libwpd.h>
 #include <strings.h>
 #include <config.h>
 
@@ -73,7 +74,7 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	WPXFileStream input(argv[1 + allpages]);
+	librevenge::RVNGFileStream input(argv[1 + allpages]);
 
 	if (!libvisio::VisioDocument::isSupported(&input)) {
 		cerr <<
@@ -82,8 +83,9 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	libvisio::VSDStringVector output;
-	if (!libvisio::VisioDocument::generateSVG(&input, output)) {
+	librevenge::RVNGStringVector output;
+    librevenge::RVNGSVGDrawingGenerator generator(output, "svg");
+	if (!libvisio::VisioDocument::parse(&input, &generator)) {
 		cerr << "ERROR: SVG Generation failed!" << endl;
 		return 1;
 	}

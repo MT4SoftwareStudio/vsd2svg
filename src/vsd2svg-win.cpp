@@ -28,19 +28,20 @@
 #include <iostream>
 #include <string>
 #include <sys/stat.h>
+#include <librevenge-stream/librevenge-stream.h>
+#include <librevenge-generators/librevenge-generators.h>
+#include <librevenge/librevenge.h>
 #include <libvisio/libvisio.h>
-#include <libwpd-stream/libwpd-stream.h>
-#include <libwpd/libwpd.h>
 #include <windows.h>
 #include <config.h>
 #include <vsd2svg-win.h>
 
 using namespace std;
 
-char gszVersion[] = "vsd2svg-win 0.1.0";
+char gszVersion[] = "vsd2svg-win 0.2.0";
 unsigned giDrawingPageCount = 0;
-libvisio::VSDStringVector output;
-
+librevenge::RVNGStringVector output;
+    
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		   LPSTR lpCmdLine, int nCmdShow)
 {
@@ -116,7 +117,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		return 1;
 	}
 
-	WPXFileStream input(szTmpVisio);
+	librevenge::RVNGFileStream input(szTmpVisio);
 
 	if (!libvisio::VisioDocument::isSupported(&input)) {
 		MessageBox(NULL,
@@ -128,7 +129,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		return 1;
 	}
 
-	if (!libvisio::VisioDocument::generateSVG(&input, output)) {
+    librevenge::RVNGSVGDrawingGenerator generator(output, "svg");
+	if (!libvisio::VisioDocument::parse(&input, &generator)) {
 		MessageBox(NULL,
 			   "ERROR: SVG generation failed!",
 			   gszVersion, MB_ICONERROR);

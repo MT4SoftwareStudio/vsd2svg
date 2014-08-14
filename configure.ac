@@ -4,7 +4,7 @@
 AC_PREREQ([2.67])
 
 m4_define([vsd2svg_version_major],[0])
-m4_define([vsd2svg_version_minor],[1])
+m4_define([vsd2svg_version_minor],[2])
 m4_define([vsd2svg_version_micro],[0])
 m4_define([vsd2svg_version],[vsd2svg_version_major.vsd2svg_version_minor.vsd2svg_version_micro])
 
@@ -49,7 +49,8 @@ AC_CONFIG_FILES([Makefile build/Makefile build/win32/Makefile \
 	src/Makefile])
 
 # Checks for libraries.
-PKG_CHECK_MODULES([libvisio],[libvisio-0.0])
+PKG_CHECK_MODULES([libvisio],[libvisio-0.1])
+PKG_CHECK_MODULES([librevenge],[librevenge-0.0 librevenge-stream-0.0 librevenge-generators-0.0])
 
 # Checks for header files.
 AC_CHECK_HEADERS([windows.h], [AM_CONDITIONAL([WINDOWS_H], true)], 

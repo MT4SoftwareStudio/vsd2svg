@@ -8,7 +8,7 @@
 
 Name:           mingw32-vsd2svg
 Summary:        Convert VSD files into SVG files
-Version:        0.1.0
+Version:        0.2.0
 Release:        0
 License:        GPLv2+
 Group:          Graphics
