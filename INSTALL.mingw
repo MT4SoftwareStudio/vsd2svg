@@ -1,0 +1,67 @@
+Installing the prerequisites with MinGW:
+
+Install MinGW
+Install pkg-config-lite
+
+wget http://zlib.net/zlib-1.2.8.tar.gz
+tar xzf zlib-1.2.8.tar.gz
+cd zlib-1.2.8
+make install -fwin32/Makefile.gcc SHARED_MODE=1
+cd ..
+
+wget http://downloads.sourceforge.net/project/libwpd/libwpd/libwpd-0.9.8/libwpd-0.9.8.tar.xz?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Flibwpd%2Ffiles%2Flibwpd%2Flibwpd-0.9.8%2F&ts=1372442662&use_mirror=heanet
+tar xf libpwd-0.9.8.tar.xz
+cd libwpd-0.9.8
+./configure --prefix=/mingw
+make
+make install
+cd ..
+
+wget http://downloads.sourceforge.net/project/libwpg/libwpg/libwpg-0.2.2/libwpg-0.2.2.tar.xz?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Flibwpg%2Ffiles%2Flibwpg%2Flibwpg-0.2.2%2F&ts=1372442984&use_mirror=kent
+tar xf libwpg-0.2.2.tar.xz
+cd libwpg-0.2.2
+./configure --prefix=/mingw
+make
+make install
+cd ..
+
+wget http://ftp.gnu.org/pub/gnu/gperf/gperf-3.0.4.tar.gz
+tar xf gperf-3.0.4.tar.gz
+cd gperf-3.0.4
+./configure --prefix=/mingw
+make
+make install
+cd ..
+
+wget http://download.icu-project.org/files/icu4c/51.2/icu4c-51_2-src.tgz
+tar xf icu4c-51_2-src.tgz
+cd icu/source
+./runConfigureICU MinGW --prefix=/mingw
+make
+make install
+cp /mingw/bin/icudt51.dll /mingw/bin/libicudt51.dll
+cp /mingw/bin/icuin51.dll /mingw/bin/libicuin51.dll
+cp /mingw/bin/icuuc51.dll /mingw/bin/libicuuc51.dll
+cd ../..
+
+wget ftp://xmlsoft.org/libxml2/libxml2-2.9.1.tar.gz
+tar xf libxml2-2.9.1.tar.gz
+cd libxml2-2.9.1
+export CPPFLAGS=-DLIBXML_STATIC
+export CXXFLAGS=-DLIBXML_STATIC
+./configure --prefix=/mingw
+make
+make install
+cd ..
+
+wget http://downloads.sourceforge.net/project/boost/boost/1.53.0/boost_1_53_0.tar.bz2?r=&ts=1372447684&use_mirror=garr
+tar xf boost_1_53_0.tar.bz2
+cd boost_1_53_0
+bootstrap.bat mingw
+bjam toolset=gcc
+
+wget http://dev-www.libreoffice.org/src/libvisio-0.0.28.tar.xz
+tar xf libvisio-0.0.28.tar.xz
+cd libvisio-0.0.28.tar.xz
+# Edit pkg-config configuration to require all required DLLs?
+./configure --prefix=/mingw
